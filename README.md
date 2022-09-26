@@ -5,8 +5,9 @@ SMC7 semester project.
 ## Group Contract
 
 
-## Problem suggestions
+## Problem definition draft
 
+How can we simulate the audiotory perception for cochlear implant (CI) users, to help normal-hearing (NH) people to experience the audiotory perception of CI users in real-time.
 
 ## Timeline
 

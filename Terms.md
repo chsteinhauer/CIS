@@ -179,3 +179,7 @@
 ### General
 
 * Circular buffer
+* Scala vestibuli
+* Scala media
+* Scala tympani
+* Stria vascularis
