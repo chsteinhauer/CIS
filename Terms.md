@@ -11,11 +11,8 @@
 	* "Tripolar stimulation"?
 	* SPIRAL vocoder
 * Narrow-band carrier
-	* The small thread implanted in cohclear(?)
 * Envelope
 * Stimulated electrodes
-	* Small "hairs" in cochlear(?)
-	* Number of electrodes??
 * Spiral ganglion
 * Tonal carriers
 * Spread
