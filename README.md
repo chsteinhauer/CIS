@@ -7,7 +7,64 @@ SMC7 semester project.
 
 ## Problem definition draft
 
-How can we simulate the audiotory perception for cochlear implant (CI) users, to help normal-hearing (NH) people to experience the audiotory perception of CI users in real-time.
+How can we simulate the audiotory perception for cochlear implant (CI) users, so that CI users can present their audiotory experience to normal-hearing (NH) people in real-time?
+
+* How can we make it possible to simulate different kinds of audiotory perception through configuration? 
+* How can we simulate how placement of electrodes from the surgery procedure affects the audiotory experience of CI users?
+
+
+
+## Requirements
+
+### Functional
+
+* The user must be able to enable and hear a CI simulation of sound input in real time.
+* The user must be able to configure variables, such as amount of active channels, bandpass width and center frequency for each channel.
+* There must be a default setting for center frequency and bandpass widths for each *N* amount of channels.
+* 
+
+### Non-functional
+
+* The processing of input to output must not exceed 10 milliseconds to preserve the real time effect.
+* The application must be able to run in windows on the computer.
+* 
+
+
+## Milestones
+
+* Research 
+
+* Design of user interface and configurable options
+
+* Basic implementation based on SPIRAL vocoder in JUCE
+
+* Implementation of user interface in JUCE
+
+* Optimization of code, bugfixes and setup as application/web?
+
+* User tests?
+
+* Final adjustments and write paper
+
+## Notes
+
+Psysical variables
+
+* Number of electrodes
+* Position of electrodes
+* Mappings of electrodes
+* Perception depth (surgery success regarding horizontal position of electrodes)
+  * range from 125Hz to 1000Hz (400Hz shallow, 80Hz(?) deep)
+* Q-factor (bandwidth) higher or lower depending on vertical positions of electrodes
+
+(Maybe variables)
+* Instantanious or progressive hearing impairment
+
+
+
+Perceptual variables
+
+(data analysis on papers Razvan gave us)
 
 ## Timeline
 
