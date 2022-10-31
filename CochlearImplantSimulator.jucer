@@ -5,10 +5,16 @@
               jucerFormatVersion="1">
   <MAINGROUP id="TcNcXX" name="CochlearImplantSimulator">
     <GROUP id="{5D28BEAE-AB3A-B242-30FA-A02311F821E6}" name="Source">
+      <GROUP id="{E5D0F0D6-DC17-1BB8-52E6-E864A8186E3E}" name="Components">
+        <FILE id="H3D7CV" name="SpectrumVisualizer.cpp" compile="1" resource="0"
+              file="Source/SpectrumVisualizer.cpp"/>
+        <FILE id="MG0QDO" name="SpectrumVisualizer.h" compile="0" resource="0"
+              file="Source/SpectrumVisualizer.h"/>
+        <FILE id="sh816F" name="MainComponent.h" compile="0" resource="0" file="Source/MainComponent.h"/>
+        <FILE id="J0v6NW" name="MainComponent.cpp" compile="1" resource="0"
+              file="Source/MainComponent.cpp"/>
+      </GROUP>
       <FILE id="oZGBDV" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
-      <FILE id="sh816F" name="MainComponent.h" compile="0" resource="0" file="Source/MainComponent.h"/>
-      <FILE id="J0v6NW" name="MainComponent.cpp" compile="1" resource="0"
-            file="Source/MainComponent.cpp"/>
     </GROUP>
   </MAINGROUP>
   <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1"/>
@@ -30,6 +36,7 @@
         <MODULEPATH id="juce_graphics" path="../../../SDKs/JUCE/modules"/>
         <MODULEPATH id="juce_gui_basics" path="../../../SDKs/JUCE/modules"/>
         <MODULEPATH id="juce_gui_extra" path="../../../SDKs/JUCE/modules"/>
+        <MODULEPATH id="juce_dsp" path="../../JUCE/modules"/>
       </MODULEPATHS>
     </VS2022>
   </EXPORTFORMATS>
@@ -41,6 +48,7 @@
     <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_dsp" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
