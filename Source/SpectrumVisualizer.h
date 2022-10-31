@@ -6,7 +6,7 @@
 class SpectrumVisualizer  : public juce::Component, private juce::Timer {
     enum
     {
-        fftOrder = 11,
+        fftOrder = 12,
         fftSize = 1 << fftOrder,
         scopeSize = 512
     };
@@ -15,7 +15,6 @@ class SpectrumVisualizer  : public juce::Component, private juce::Timer {
         SpectrumVisualizer();
         ~SpectrumVisualizer();
 
-        //==============================================================================
         void timerCallback() override;
 
         void paint(juce::Graphics& g) override;
