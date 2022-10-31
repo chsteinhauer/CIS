@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="i4eibK" name="CochlearImplantSimulator" projectType="guiapp"
+              useAppConfig="0" addUsingNamespaceToJuceHeader="0" displaySplashScreen="1"
+              jucerFormatVersion="1">
+  <MAINGROUP id="TcNcXX" name="CochlearImplantSimulator">
+    <GROUP id="{5D28BEAE-AB3A-B242-30FA-A02311F821E6}" name="Source">
+      <FILE id="oZGBDV" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
+      <FILE id="sh816F" name="MainComponent.h" compile="0" resource="0" file="Source/MainComponent.h"/>
+      <FILE id="J0v6NW" name="MainComponent.cpp" compile="1" resource="0"
+            file="Source/MainComponent.cpp"/>
+    </GROUP>
+  </MAINGROUP>
+  <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1"/>
+  <EXPORTFORMATS>
+    <VS2022 targetFolder="Builds/VisualStudio2022">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="CochlearImplantSimulator"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="CochlearImplantSimulator"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_audio_basics" path="../../../SDKs/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../../../SDKs/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../../../SDKs/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../../../SDKs/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../../../SDKs/JUCE/modules"/>
+        <MODULEPATH id="juce_core" path="../../../SDKs/JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../../../SDKs/JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="../../../SDKs/JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="../../../SDKs/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../../../SDKs/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../../../SDKs/JUCE/modules"/>
+      </MODULEPATHS>
+    </VS2022>
+  </EXPORTFORMATS>
+  <MODULES>
+    <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_devices" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+  </MODULES>
+</JUCERPROJECT>
