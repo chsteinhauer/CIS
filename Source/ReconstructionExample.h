@@ -10,4 +10,6 @@ public:
     void process(const juce::dsp::ProcessContextReplacing<float>& context);
     void reset();
 
+private:
+    juce::dsp::Oscillator<float> osc;
 };

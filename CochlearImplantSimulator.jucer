@@ -5,6 +5,9 @@
               jucerFormatVersion="1">
   <MAINGROUP id="TcNcXX" name="CochlearImplantSimulator">
     <GROUP id="{5D28BEAE-AB3A-B242-30FA-A02311F821E6}" name="Source">
+      <GROUP id="{88E46447-AC79-1767-C793-574406796478}" name="Store">
+        <FILE id="ilPx8y" name="Store.h" compile="0" resource="0" file="Source/Store.h"/>
+      </GROUP>
       <GROUP id="{5CFE7F1E-118F-7390-57EA-887498C1E350}" name="Modules">
         <GROUP id="{F56E4CAD-CAC2-43B1-18F1-413855840F04}" name="Reconstruction">
           <FILE id="YAvlMq" name="ReconstructionExample.cpp" compile="1" resource="0"
@@ -32,6 +35,10 @@
               file="Source/SimulationEngine.h"/>
       </GROUP>
       <GROUP id="{E5D0F0D6-DC17-1BB8-52E6-E864A8186E3E}" name="Components">
+        <FILE id="kennBi" name="ParameterComponents.cpp" compile="1" resource="0"
+              file="Source/ParameterComponents.cpp"/>
+        <FILE id="tUb8J0" name="ParameterComponents.h" compile="0" resource="0"
+              file="Source/ParameterComponents.h"/>
         <FILE id="H3D7CV" name="SpectrumVisualizer.cpp" compile="1" resource="0"
               file="Source/SpectrumVisualizer.cpp"/>
         <FILE id="MG0QDO" name="SpectrumVisualizer.h" compile="0" resource="0"
