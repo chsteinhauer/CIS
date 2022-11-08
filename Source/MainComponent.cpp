@@ -4,28 +4,17 @@
 
 MainComponent::MainComponent(): juce::AudioAppComponent(otherDeviceManager)
 {
-
-    //Reset settings pointer
-    audioSettings.reset(new juce::AudioDeviceSelectorComponent(otherDeviceManager, 0, 2, 0, 2, false, false, true, true));
-
-    otherDeviceManager.initialise(2, 2, nullptr, true);
-    
-    // Add audio settings
-    addAndMakeVisible(audioSettings.get());
-
     engine.reset();
     
     if (engine.get() == nullptr) {
         engine.reset(new SimulationEngine<PreprocessExample, AnalyseExample, ReconstructionExample>());
     }
 
-    // Add input and output spectrum visualizer 
-    addAndMakeVisible(IN);
-    addAndMakeVisible(OUT);
-    IN.setTitle("Input");
-    OUT.setTitle("Output");
-
-    setSize (1000, 400);
+    //Reset settings pointer
+    audioSettings.reset(new juce::AudioDeviceSelectorComponent(otherDeviceManager, 0, 2, 0, 2, false, false, true, true));
+    otherDeviceManager.initialise(2, 2, nullptr, true);
+    
+    GUISetup();
 
     // Some platforms require permissions to open input channels so request that here
     if (juce::RuntimePermissions::isRequired (juce::RuntimePermissions::recordAudio)
@@ -47,26 +36,9 @@ MainComponent::~MainComponent()
     shutdownAudio();
 }
 
-////==============================================================================
-//void MainComponent::initEngine()
-//{
-//    MainComponent::engine.reset();
-//
-//    if (MainComponent::engine.get() == nullptr) {
-//        MainComponent::engine.reset(new SimulationEngine<PreprocessExample, AnalyseExample, ReconstructionExample>());
-//    }
-//}
-
 void MainComponent::prepareToPlay (int samplesPerBlockExpected, double sampleRate)
 {
-    engine -> prepareToPlay(samplesPerBlockExpected, sampleRate);
-    // This function will be called when the audio device is started, or when
-    // its settings (i.e. sample rate, block size, etc) are changed.
-
-    // You can use this function to initialise any resources you might need,
-    // but be careful - it will be called on the audio thread, not the GUI thread.
-
-    // For more details, see the help for AudioProcessor::prepareToPlay()
+    engine -> prepareToPlay(sampleRate, samplesPerBlockExpected);
 }
 
 void MainComponent::getNextAudioBlock (const juce::AudioSourceChannelInfo& bufferToFill)
@@ -101,7 +73,7 @@ void MainComponent::getNextAudioBlock (const juce::AudioSourceChannelInfo& buffe
                 IN.pushNextSampleIntoFifo(buffer[i]);
             }
 
-            engine -> getNextAudioBlock(bufferToFill);
+            engine -> beginSimulationProcess(bufferToFill);
 
             for (auto i = 0; i < bufferToFill.numSamples; ++i)
             {
@@ -114,13 +86,25 @@ void MainComponent::getNextAudioBlock (const juce::AudioSourceChannelInfo& buffe
 void MainComponent::releaseResources()
 {
     engine -> releaseResources();
-    // This will be called when the audio device stops, or when it is being
-    // restarted due to a setting change.
-
-    // For more details, see the help for AudioProcessor::releaseResources()
 }
 
 //==============================================================================
+void MainComponent::GUISetup() {
+    // Add audio settings
+    addAndMakeVisible(audioSettings.get());
+
+    editor = engine->getEditor();
+    addAndMakeVisible(editor);
+
+    // Add input and output spectrum visualizer 
+    addAndMakeVisible(IN);
+    IN.setTitle("Input");
+    addAndMakeVisible(OUT);
+    OUT.setTitle("Output");
+
+    // Initial size of application
+    setSize(1000, 400);
+}
 void MainComponent::paint (juce::Graphics& g)
 {
     g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
@@ -128,17 +112,37 @@ void MainComponent::paint (juce::Graphics& g)
 
 void MainComponent::resized()
 {
-    // This is called when the MainContentComponent is resized.
-    // If you add any child components, this is where you should
-    // update their positions.
+    //// Spectrum visualizer
+    //int w = 400; int h = 200;
+    //IN.setBounds(getWidth() - w, getHeight() - h * 2, w, h);
+    //OUT.setBounds(getWidth() - w, getHeight() - h, w, h);
+
+    //// Settings
+    //audioSettings->setBounds(0, 0, getWidth() - w - 20, 30);
+
+    juce::FlexBox freqVisualizers;
+    freqVisualizers.alignContent = juce::FlexBox::AlignContent::center;
+    freqVisualizers.flexDirection = juce::FlexBox::Direction::column;
+
+    freqVisualizers.items.add(juce::FlexItem(IN).withMinWidth(400.0f).withMinHeight(200.0f));
+    freqVisualizers.items.add(juce::FlexItem(OUT).withMinWidth(400.0f).withMinHeight(200.0f));
+
+    freqVisualizers.performLayout(getLocalBounds().toFloat());
+
+
+    juce::FlexBox main;
+    //main.flexWrap = juce::FlexBox::Wrap::wrap;
+    main.alignContent = juce::FlexBox::AlignContent::center;
+    main.justifyContent = juce::FlexBox::JustifyContent::spaceBetween;
+
+    main.items.add(juce::FlexItem(*editor).withMinWidth(400.0f).withMinHeight(400.0f));
+
+    if (State::GetInstance() -> getParameter("settings") -> getValue()) {
+        main.items.add(juce::FlexItem(*audioSettings).withMinWidth(400.0f).withMinHeight(400.0f));
+    }
+
+    main.items.add(juce::FlexItem(freqVisualizers).withMinWidth(600.0f).withMinHeight(400.0f));
+
+    main.performLayout(getLocalBounds().toFloat());
     
-
-    // Spectrum visualizer
-    int w = 400; int h = 200;
-    IN.setBounds(getWidth() - w, getHeight() - h * 2, w, h);
-    OUT.setBounds(getWidth() - w, getHeight() - h, w, h);
-
-    // Settings
-    audioSettings->setBounds(0, 0, getWidth() - w - 20, 30);
 }
-

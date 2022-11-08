@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <JuceHeader.h>
@@ -30,6 +31,8 @@ public:
     void paint (juce::Graphics& g) override;
     void resized() override;
 
+    void GUISetup();
+
 private:
     //==============================================================================
     // Your private member variables go here...
@@ -38,7 +41,7 @@ private:
     std::unique_ptr<juce::AudioDeviceSelectorComponent> audioSettings;
     std::unique_ptr<SimulationEngine<PreprocessExample, AnalyseExample, ReconstructionExample>> engine;
 
-
+    SimulationEditor* editor;
     SpectrumVisualizer IN;
     SpectrumVisualizer OUT;
 

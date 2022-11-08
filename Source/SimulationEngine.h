@@ -1,31 +1,36 @@
+
+
 #pragma once
 
 #include <JuceHeader.h>
+#include "SimulationEditor.h"
+#include "SimulationState.h"
 
 template<typename ModuleA, typename ModuleB, typename ModuleC>
 class SimulationEngine : public juce::AudioProcessor,
-                         public juce::dsp::ProcessorWrapper<juce::dsp::ProcessorChain<ModuleA, ModuleB, ModuleC>>,
-                         private juce::ChangeListener
+                         public juce::dsp::ProcessorWrapper<juce::dsp::ProcessorChain<ModuleA, ModuleB, ModuleC>>
 {
 public:
-    SimulationEngine() : AudioProcessor(BusesProperties().withInput("Input", AudioChannelSet::stereo())
-                                                         .withOutput("Output", AudioChannelSet::stereo()))
+    SimulationEngine() : AudioProcessor(getBusesProperties()) {
+        State::Initialize(*this);
+    };
+    ~SimulationEngine() {}
+    
+
+    void prepareToPlay(double sampleRate, int blockSize) override
     {
-        addParameter(gain = new AudioParameterFloat({ "gain", 1 }, "Gain", 0.0f, 1.0f, 0.5f));
-
-    } {
-
-    };
-
-    void prepareToPlay(int blockSize, double sampleRate) override {
         this->prepare({ sampleRate, (juce::uint32)blockSize, 2 });
-    };
+    }
 
-    void releaseResources() override {
-        this->reset();
-    };
+    void releaseResources() override
+    {
+        this->juce::dsp::ProcessorWrapper<juce::dsp::ProcessorChain<ModuleA, ModuleB, ModuleC>>::reset();
+    }
 
-    void getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill) override {
+    void beginSimulationProcess(const juce::AudioSourceChannelInfo& bufferToFill)
+    {
+        jassert(!isUsingDoublePrecision());
+
         if (bufferToFill.buffer == nullptr)
         {
             jassertfalse;
@@ -37,21 +42,46 @@ public:
 
         juce::ScopedLock audioLock(audioCallbackLock);
         this->process(juce::dsp::ProcessContextReplacing<float>(block));
-    };
+    }
 
-    void changeListenerCallback(juce::ChangeBroadcaster*) {
-        juce::ScopedLock audioLock(audioCallbackLock);
-    };
+    void processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages) override {};
+    void processBlock(juce::AudioBuffer<double>& buffer, juce::MidiBuffer& midiMessages) override {};
 
-    //void getStateInformation(MemoryBlock& destData) override
-    //{
-    //    juce::MemoryOutputStream(destData, true).writeFloat(*gain);
-    //}
+    bool hasEditor() const override { return false; }
 
-    //void setStateInformation(const void* data, int sizeInBytes) override
-    //{
-    //    gain -> setValueNotifyingHost(juce::MemoryInputStream(data, static_cast<size_t> (sizeInBytes), false).readFloat());
-    //}
+    SimulationEditor* getEditor()
+    {
+        return (SimulationEditor*)createEditor();
+    }
+
+    juce::AudioProcessorEditor* createEditor() override
+    {
+        return new SimulationEditor(*this);
+    }
+
+    //==============================================================================
+    const juce::String getName() const override { return "CochlearImplantSimulation"; }
+    bool acceptsMidi() const override { return false; }
+    bool producesMidi() const override { return false; }
+    double getTailLengthSeconds() const override { return 0.0; }
+
+    //==============================================================================
+    int getNumPrograms() override { return 0; }
+    int getCurrentProgram() override { return 0; }
+    void setCurrentProgram(int) override {}
+    const juce::String getProgramName(int) override { return "None"; }
+    void changeProgramName(int, const juce::String&) override {}
+
+    //==============================================================================
+    void getStateInformation(juce::MemoryBlock& destData) override { }
+
+    void setStateInformation(const void* data, int sizeInBytes) override { }
+
+    static BusesProperties getBusesProperties()
+    {
+        return BusesProperties().withInput("Input", juce::AudioChannelSet::stereo(), true)
+            .withOutput("Output", juce::AudioChannelSet::stereo(), true);
+    }
 
     //==============================================================================
     bool isBusesLayoutSupported(const BusesLayout& layouts) const override
@@ -61,6 +91,7 @@ public:
 
         return (mainInLayout == mainOutLayout && (!mainInLayout.isDisabled()));
     }
+    
 
     juce::CriticalSection audioCallbackLock;
 };
