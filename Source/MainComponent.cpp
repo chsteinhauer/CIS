@@ -85,40 +85,30 @@ void MainComponent::getNextAudioBlock (const juce::AudioSourceChannelInfo& buffe
     auto maxInputChannels = inputChannels.getHighestBit() + 1;
     auto maxOutputChannels = outputChannels.getHighestBit() + 1;
 
-    for (auto channel = 0; channel < maxOutputChannels; ++channel)
-    {
-        if ((!outputChannels[channel]) || maxInputChannels == 0)
-        {
-            bufferToFill.buffer->clear(channel, bufferToFill.startSample, bufferToFill.numSamples);
-        }
-        else
-        {
-            auto actualInputChannel = channel % maxInputChannels;
-        }
-
-        if (!inputChannels[channel])
-        {
-            bufferToFill.buffer->clear(channel, bufferToFill.startSample, bufferToFill.numSamples);
-        }
-        else if (mediaToggle.getToggleState() == false)
-        {
-            auto* buffer = bufferToFill.buffer -> getReadPointer(channel, bufferToFill.startSample);
-
-            for (auto i = 0; i < bufferToFill.numSamples; ++i)
-            {
-                IN.pushNextSampleIntoFifo(buffer[i]);
-            }
-        }
-    }
-
     if (mediaToggle.getToggleState())
     {
         mediaPlayer.getMediaAudioBlock(bufferToFill);
     }
-    else
+
+    for (auto channel = 0; channel < maxOutputChannels; ++channel)
     {
-        //Process input audio here...
+        
+        //If there is no input or input and ouput channel do not match and not using media
+        if ((!outputChannels[channel] || maxInputChannels == 0 || !inputChannels[channel]) 
+            && mediaToggle.getToggleState() == false)
+        {
+            bufferToFill.buffer->clear(channel, bufferToFill.startSample, bufferToFill.numSamples);
+        }
+
+		auto* buffer = bufferToFill.buffer->getReadPointer(channel, bufferToFill.startSample);
+
+		for (auto i = 0; i < bufferToFill.numSamples; ++i)
+		{
+			IN.pushNextSampleIntoFifo(buffer[i]);
+		}
     }
+
+    //Audio processing goes here...
 
     for (auto channel = 0; channel < maxOutputChannels; ++channel)
     {
