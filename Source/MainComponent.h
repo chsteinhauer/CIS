@@ -6,6 +6,7 @@
 #include "PreprocessExample.h"
 #include "AnalyseExample.h"
 #include "ReconstructionExample.h"
+#include "MediaPlayerComponent.h"
 
 //==============================================================================
 /*
@@ -15,6 +16,8 @@
 
 class MainComponent  : public juce::AudioAppComponent
 {
+    
+
 public:
     //==============================================================================
     MainComponent();
@@ -30,6 +33,8 @@ public:
     void paint (juce::Graphics& g) override;
     void resized() override;
 
+    //==============================================================================
+
 private:
     //==============================================================================
     // Your private member variables go here...
@@ -38,9 +43,13 @@ private:
     std::unique_ptr<juce::AudioDeviceSelectorComponent> audioSettings;
     std::unique_ptr<SimulationEngine<PreprocessExample, AnalyseExample, ReconstructionExample>> engine;
 
-
     SpectrumVisualizer IN;
     SpectrumVisualizer OUT;
+
+    juce::ToggleButton mediaToggle;
+    MediaPlayerComponent mediaPlayer;
+
+    void mediaToggleButtonChanged();
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };
