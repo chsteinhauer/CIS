@@ -6,6 +6,7 @@ MainComponent::MainComponent(): juce::AudioAppComponent(otherDeviceManager)
 {
     setLookAndFeel(&otherLookAndFeel);
 
+
     engine.reset();
     
     if (engine.get() == nullptr) {
@@ -13,7 +14,7 @@ MainComponent::MainComponent(): juce::AudioAppComponent(otherDeviceManager)
     }
 
     //Reset settings pointer
-    audioSettings.reset(new juce::AudioDeviceSelectorComponent(otherDeviceManager, 0, 2, 0, 2, false, false, true, true));
+    audioSettings.reset(new juce::AudioDeviceSelectorComponent(otherDeviceManager, 0, 2, 0, 2, false, false, true, false));
     otherDeviceManager.initialise(2, 2, nullptr, true);
     
     GUISetup();
@@ -42,6 +43,7 @@ MainComponent::~MainComponent()
 void MainComponent::prepareToPlay (int samplesPerBlockExpected, double sampleRate)
 {
     engine -> prepareToPlay(sampleRate, samplesPerBlockExpected);
+    mediaPlayer.prepareMediaPlayer(samplesPerBlockExpected, sampleRate);
 }
 
 void MainComponent::getNextAudioBlock (const juce::AudioSourceChannelInfo& bufferToFill)
@@ -52,41 +54,43 @@ void MainComponent::getNextAudioBlock (const juce::AudioSourceChannelInfo& buffe
     auto maxInputChannels = inputChannels.getHighestBit() + 1;
     auto maxOutputChannels = outputChannels.getHighestBit() + 1;
 
+    if (mediaToggle.getToggleState())
+    {
+        mediaPlayer.getMediaAudioBlock(bufferToFill);
+    }
+
     for (auto channel = 0; channel < maxOutputChannels; ++channel)
     {
-        if ((!outputChannels[channel]) || maxInputChannels == 0)
+        
+        //If there is no input or input and ouput channel do not match and not using media
+        if ((!outputChannels[channel] || maxInputChannels == 0 || !inputChannels[channel]) 
+            && mediaToggle.getToggleState() == false)
         {
             bufferToFill.buffer->clear(channel, bufferToFill.startSample, bufferToFill.numSamples);
         }
-        else
+
+		auto* buffer = bufferToFill.buffer->getReadPointer(channel, bufferToFill.startSample);
+
+		for (auto i = 0; i < bufferToFill.numSamples; ++i)
+		{
+			IN.pushNextSampleIntoFifo(buffer[i]);
+		}
+    }
+
+    //Audio processing goes here...
+
+    for (auto channel = 0; channel < maxOutputChannels; ++channel)
+    {
+        auto* buffer = bufferToFill.buffer->getWritePointer(channel, bufferToFill.startSample);
+
+        for (auto i = 0; i < bufferToFill.numSamples; ++i)
         {
-            auto actualInputChannel = channel % maxInputChannels;
-        }
+            auto volume = State::GetInstance()->getParameter("volume")->getValue();
+            auto audio = State::GetInstance()->getParameter("audio")->getValue();
 
-        if (!inputChannels[channel])
-        {
-            bufferToFill.buffer->clear(channel, bufferToFill.startSample, bufferToFill.numSamples);
-        }
-        else
-        {
-            auto* buffer = bufferToFill.buffer -> getReadPointer(channel, bufferToFill.startSample);
+            buffer[i] = buffer[i] * volume * !audio;
 
-            for (auto i = 0; i < bufferToFill.numSamples; ++i)
-            {
-                IN.pushNextSampleIntoFifo(buffer[i]);
-            }
-
-            engine -> beginSimulationProcess(bufferToFill);
-
-            auto* outBuffer = bufferToFill.buffer->getWritePointer(channel, bufferToFill.startSample);
-            
-
-            for (auto i = 0; i < bufferToFill.numSamples; ++i)
-            {
-                auto volume = State::GetInstance()->getParameter("volume")->getValue();
-                outBuffer[i] = buffer[i] * volume;
-                OUT.pushNextSampleIntoFifo(outBuffer[i]);
-            }
+            OUT.pushNextSampleIntoFifo(buffer[i]);
         }
     }
 }
@@ -94,12 +98,11 @@ void MainComponent::getNextAudioBlock (const juce::AudioSourceChannelInfo& buffe
 void MainComponent::releaseResources()
 {
     engine -> releaseResources();
+    mediaPlayer.releaseResources();
 }
 
 //==============================================================================
 void MainComponent::GUISetup() {
-    
-
     editor = engine->getEditor();
     addAndMakeVisible(editor);
 
@@ -113,6 +116,13 @@ void MainComponent::GUISetup() {
     addAndMakeVisible(OUT);
     OUT.setTitle("Output");
 
+    addAndMakeVisible(mediaPlayer);
+
+    addAndMakeVisible(mediaToggle);
+    mediaToggle.setButtonText("Use media as input");
+    mediaToggle.onClick = [this] { mediaToggleButtonChanged(); };
+    mediaPlayer.setEnabled(mediaToggle.getToggleState());
+
     // Initial size of application
     setSize(1000, 600);
 }
@@ -125,23 +135,26 @@ void MainComponent::paint (juce::Graphics& g)
 
 void MainComponent::resized()
 {
-    // Graph/Visualizer panel
-    juce::FlexBox visualizePanel;
-    visualizePanel.justifyContent = juce::FlexBox::JustifyContent::flexEnd;
-    visualizePanel.alignContent = juce::FlexBox::AlignContent::center;
-    visualizePanel.flexDirection = juce::FlexBox::Direction::column;
+    // Player panel
+    juce::FlexBox player;
+    player.justifyContent = juce::FlexBox::JustifyContent::flexEnd;
+    player.alignContent = juce::FlexBox::AlignContent::center;
+    player.flexDirection = juce::FlexBox::Direction::column;
 
-    visualizePanel.items.add(juce::FlexItem(IN).withMinWidth(300.0f).withMinHeight(200.0f));
-    visualizePanel.items.add(juce::FlexItem(OUT).withMinWidth(300.0f).withMinHeight(200.0f));
+    // Media Player
+    player.items.add(juce::FlexItem(mediaToggle).withMinWidth(150).withMinHeight(20));
+    player.items.add(juce::FlexItem(mediaPlayer).withMinWidth(400).withMinHeight(160));
+    player.items.add(juce::FlexItem(IN).withMinWidth(300.0f).withMinHeight(200.0f));
+    player.items.add(juce::FlexItem(OUT).withMinWidth(300.0f).withMinHeight(200.0f));
 
-    visualizePanel.performLayout(getLocalBounds().toFloat());
+    player.performLayout(getLocalBounds().toFloat());
 
     juce::FlexBox content;
     content.alignContent = juce::FlexBox::AlignContent::center;
     content.justifyContent = juce::FlexBox::JustifyContent::spaceBetween;
 
     content.items.add(juce::FlexItem(*editor).withMinWidth(200.0f).withMinHeight(400.0f).withFlex(1));
-    content.items.add(juce::FlexItem(visualizePanel).withMinWidth(400.0f).withMinHeight(400.0f));
+    content.items.add(juce::FlexItem(player).withMinWidth(400.0f).withMinHeight(400.0f));
 
     content.performLayout(getLocalBounds().toFloat());
 
@@ -154,5 +167,13 @@ void MainComponent::resized()
     main.items.add(juce::FlexItem(content).withFlex(1));
 
     main.performLayout(getLocalBounds().toFloat());
+}
 
+void MainComponent::mediaToggleButtonChanged()
+{
+    mediaPlayer.setEnabled(mediaToggle.getToggleState());
+    if (mediaToggle.getToggleState() == false)
+    {
+        mediaPlayer.stopMediaPlayer();
+    }
 }

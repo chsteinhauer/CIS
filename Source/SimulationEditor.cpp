@@ -4,15 +4,14 @@
 #include "SimulationState.h"
 
 SimulationEditor::SimulationEditor(juce::AudioProcessor& owner)
-    : AudioProcessorEditor(owner),
-    gainSlider("volume","Volume",0.0f,1.0f),
-    settings("settings","Settings",BinaryData::settings24_png,BinaryData::settings24_pngSize)
+    : AudioProcessorEditor(owner)
 {
     addAndMakeVisible(menu = new MenuBar());
-    gainSlider.setSliderStyle(juce::Slider::LinearVertical);
+    volume.setSliderStyle(juce::Slider::LinearVertical);
 
-    menu->addItem(gainSlider);
-    menu->addItem(settings);
+    menu->addItemUp(audio);
+    menu->addItemUp(volume);
+    menu->addItemDown(settings);
 }
 
 SimulationEditor::~SimulationEditor() {

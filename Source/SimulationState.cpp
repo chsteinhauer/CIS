@@ -41,6 +41,6 @@ juce::AudioProcessorValueTreeState* State::GetInstance()
 juce::AudioProcessorValueTreeState::ParameterLayout State::createParameters() {
     return {
         std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { "volume",  1 }, "Volume",     juce::NormalisableRange<float>(0.0f, 1.0f), 1.0f),
-        std::make_unique<juce::AudioParameterBool>(juce::ParameterID  { "settings",1 }, "Settings",   false),
+        std::make_unique<juce::AudioParameterBool>(juce::ParameterID  { "audio",   1 }, "Audio",      false),
     };
 }

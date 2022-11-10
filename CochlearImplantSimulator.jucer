@@ -5,11 +5,11 @@
               jucerFormatVersion="1">
   <MAINGROUP id="TcNcXX" name="CochlearImplantSimulator">
     <GROUP id="{5D28BEAE-AB3A-B242-30FA-A02311F821E6}" name="Source">
-      <GROUP id="{88E46447-AC79-1767-C793-574406796478}" name="Setup">
+      <GROUP id="{88E46447-AC79-1767-C793-574406796478}" name="Resources">
         <GROUP id="{FAEC6B46-0EBD-BCF4-EBE5-42AE16F01303}" name="Icons">
+          <FILE id="DssAun" name="audio-24.png" compile="0" resource="1" file="../../Stuff/audio-24.png"/>
+          <FILE id="K6uGNp" name="no-audio-24.png" compile="0" resource="1" file="../../Stuff/no-audio-24.png"/>
           <FILE id="WWZtc1" name="settings-24.png" compile="0" resource="1" file="../../Stuff/icons8-settings-material-filled/settings-24.png"/>
-          <FILE id="VTOpe5" name="settings-48.png" compile="0" resource="1" file="../../Stuff/icons8-settings-material-filled/settings-48.png"/>
-          <FILE id="KzWmOR" name="settings-96.png" compile="0" resource="1" file="../../Stuff/icons8-settings-material-filled/settings-96.png"/>
         </GROUP>
       </GROUP>
       <GROUP id="{5CFE7F1E-118F-7390-57EA-887498C1E350}" name="Modules">
@@ -47,15 +47,14 @@
               file="Source/SimulationState.h"/>
       </GROUP>
       <GROUP id="{E5D0F0D6-DC17-1BB8-52E6-E864A8186E3E}" name="Components">
-        <FILE id="P9m8Zo" name="ToolbarMenu.cpp" compile="1" resource="0" file="Source/ToolbarMenu.cpp"/>
-        <FILE id="EVeveq" name="ToolbarMenu.h" compile="0" resource="0" file="Source/ToolbarMenu.h"/>
-        <FILE id="DpAve9" name="ToolbarItems.cpp" compile="1" resource="0"
-              file="Source/ToolbarItems.cpp"/>
-        <FILE id="MN1VZK" name="ToolbarItems.h" compile="0" resource="0" file="Source/ToolbarItems.h"/>
         <FILE id="JZccR5" name="ParameterController.cpp" compile="1" resource="0"
               file="Source/ParameterController.cpp"/>
         <FILE id="iAi2gP" name="ParameterController.h" compile="0" resource="0"
               file="Source/ParameterController.h"/>
+        <FILE id="CoA6la" name="MediaPlayerComponent.cpp" compile="1" resource="0"
+              file="Source/MediaPlayerComponent.cpp"/>
+        <FILE id="A00Sdj" name="MediaPlayerComponent.h" compile="0" resource="0"
+              file="Source/MediaPlayerComponent.h"/>
         <FILE id="H3D7CV" name="SpectrumVisualizer.cpp" compile="1" resource="0"
               file="Source/SpectrumVisualizer.cpp"/>
         <FILE id="MG0QDO" name="SpectrumVisualizer.h" compile="0" resource="0"
@@ -67,7 +66,7 @@
       <FILE id="oZGBDV" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
     </GROUP>
   </MAINGROUP>
-  <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1"/>
+  <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_USE_MP3AUDIOFORMAT="1"/>
   <EXPORTFORMATS>
     <VS2022 targetFolder="Builds/VisualStudio2022">
       <CONFIGURATIONS>

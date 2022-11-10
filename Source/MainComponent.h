@@ -7,7 +7,7 @@
 #include "PreprocessExample.h"
 #include "AnalyseExample.h"
 #include "ReconstructionExample.h"
-#include "ToolbarMenu.h"
+#include "MediaPlayerComponent.h"
 
 class OtherLookAndFeel : public juce::LookAndFeel_V4
 {
@@ -27,6 +27,8 @@ public:
 
 class MainComponent  : public juce::AudioAppComponent
 {
+    
+
 public:
     //==============================================================================
     MainComponent();
@@ -57,6 +59,11 @@ private:
     SimulationEditor* editor;
     SpectrumVisualizer IN;
     SpectrumVisualizer OUT;
+
+    juce::ToggleButton mediaToggle;
+    MediaPlayerComponent mediaPlayer;
+
+    void mediaToggleButtonChanged();
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };

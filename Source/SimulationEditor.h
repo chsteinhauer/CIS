@@ -7,9 +7,16 @@ struct MenuBar : juce::Component {
     MenuBar() {}
     ~MenuBar() {}
 
-    void addItem(juce::Component& item) {
+    // If item should be placed in the upper section of the menu bar
+    void addItemUp(juce::Component& item) {
         addAndMakeVisible(item);
-        items.add(&item);
+        itemsUp.add(&item);
+    }
+
+    // If item should be placed in the lower section of the menu bar
+    void addItemDown(juce::Component& item) {
+        addAndMakeVisible(item);
+        itemsDown.add(&item);
     }
 
     void paint(juce::Graphics& g) override {
@@ -18,23 +25,46 @@ struct MenuBar : juce::Component {
 
     void resized() override {
         juce::FlexBox menu;
-        menu.justifyContent = juce::FlexBox::JustifyContent::spaceBetween;
         menu.alignContent = juce::FlexBox::AlignContent::center;
         menu.flexDirection = juce::FlexBox::Direction::column;
 
-        for (int i = 0; i < items.size(); i++) {
-            auto item = items[i];
-            menu.items.add(juce::FlexItem(*item)
+        juce::FlexBox up;
+        menu.justifyContent = juce::FlexBox::JustifyContent::flexStart;
+        up.alignContent = juce::FlexBox::AlignContent::center;
+        up.flexDirection = juce::FlexBox::Direction::column;
+
+
+        for (int i = 0; i < itemsUp.size(); i++) {
+            auto item = itemsUp[i];
+            up.items.add(juce::FlexItem(*item)
                 .withMinHeight(item->getWidth())
                 .withMinWidth(item->getHeight())
-                .withMargin(7));
+                .withMargin({ 7,7,0,7 }));
         }
+
+        juce::FlexBox down;
+        down.alignContent = juce::FlexBox::AlignContent::center;
+        down.flexDirection = juce::FlexBox::Direction::column;
+        menu.justifyContent = juce::FlexBox::JustifyContent::flexEnd;
+
+        for (int i = 0; i < itemsDown.size(); i++) {
+            auto item = itemsDown[i];
+            down.items.add(juce::FlexItem(*item)
+                .withMinHeight(item->getHeight())
+                .withMinWidth(item->getWidth())
+                .withMargin({ 0,7,7,7 }));
+        }
+
+
+        menu.items.add(juce::FlexItem(up).withFlex(1).withMargin({ 4,0,0,0 }));
+        menu.items.add(juce::FlexItem(down).withMinHeight(39 * itemsDown.size()));
 
         menu.performLayout(getLocalBounds().toFloat());
     }
 
 
-    juce::Array<juce::Component*> items;
+    juce::Array<juce::Component*> itemsUp;
+    juce::Array<juce::Component*> itemsDown;
 };
 
 
@@ -53,8 +83,13 @@ public:
     void setupSettingsModal(juce::AudioDeviceSelectorComponent* audioSettings);
 
 private: 
-    IconController settings;
-    SliderController gainSlider;
+
+
+    // Menu bar and items
 
     MenuBar* menu;
+
+    SettingsButton settings;
+    AudioToggleButton audio;
+    VolumeSlider volume;
 };
