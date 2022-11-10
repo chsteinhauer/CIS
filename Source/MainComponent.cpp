@@ -4,6 +4,8 @@
 
 MainComponent::MainComponent(): juce::AudioAppComponent(otherDeviceManager)
 {
+    setLookAndFeel(&otherLookAndFeel);
+
     engine.reset();
     
     if (engine.get() == nullptr) {
@@ -34,6 +36,7 @@ MainComponent::~MainComponent()
 {
     // This shuts down the audio device and clears the audio source.
     shutdownAudio();
+    setLookAndFeel(nullptr);
 }
 
 void MainComponent::prepareToPlay (int samplesPerBlockExpected, double sampleRate)
@@ -75,9 +78,14 @@ void MainComponent::getNextAudioBlock (const juce::AudioSourceChannelInfo& buffe
 
             engine -> beginSimulationProcess(bufferToFill);
 
+            auto* outBuffer = bufferToFill.buffer->getWritePointer(channel, bufferToFill.startSample);
+            
+
             for (auto i = 0; i < bufferToFill.numSamples; ++i)
             {
-                OUT.pushNextSampleIntoFifo(buffer[i]);
+                auto volume = State::GetInstance()->getParameter("volume")->getValue();
+                outBuffer[i] = buffer[i] * volume;
+                OUT.pushNextSampleIntoFifo(outBuffer[i]);
             }
         }
     }
@@ -90,11 +98,14 @@ void MainComponent::releaseResources()
 
 //==============================================================================
 void MainComponent::GUISetup() {
-    // Add audio settings
-    addAndMakeVisible(audioSettings.get());
+    
 
     editor = engine->getEditor();
     addAndMakeVisible(editor);
+
+    // Add audio settings
+    audioSettings->setSize(600,400);
+    editor->setupSettingsModal(audioSettings.get());
 
     // Add input and output spectrum visualizer 
     addAndMakeVisible(IN);
@@ -103,8 +114,10 @@ void MainComponent::GUISetup() {
     OUT.setTitle("Output");
 
     // Initial size of application
-    setSize(1000, 400);
+    setSize(1000, 600);
 }
+
+
 void MainComponent::paint (juce::Graphics& g)
 {
     g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
@@ -112,37 +125,34 @@ void MainComponent::paint (juce::Graphics& g)
 
 void MainComponent::resized()
 {
-    //// Spectrum visualizer
-    //int w = 400; int h = 200;
-    //IN.setBounds(getWidth() - w, getHeight() - h * 2, w, h);
-    //OUT.setBounds(getWidth() - w, getHeight() - h, w, h);
+    // Graph/Visualizer panel
+    juce::FlexBox visualizePanel;
+    visualizePanel.justifyContent = juce::FlexBox::JustifyContent::flexEnd;
+    visualizePanel.alignContent = juce::FlexBox::AlignContent::center;
+    visualizePanel.flexDirection = juce::FlexBox::Direction::column;
 
-    //// Settings
-    //audioSettings->setBounds(0, 0, getWidth() - w - 20, 30);
+    visualizePanel.items.add(juce::FlexItem(IN).withMinWidth(300.0f).withMinHeight(200.0f));
+    visualizePanel.items.add(juce::FlexItem(OUT).withMinWidth(300.0f).withMinHeight(200.0f));
 
-    juce::FlexBox freqVisualizers;
-    freqVisualizers.alignContent = juce::FlexBox::AlignContent::center;
-    freqVisualizers.flexDirection = juce::FlexBox::Direction::column;
+    visualizePanel.performLayout(getLocalBounds().toFloat());
 
-    freqVisualizers.items.add(juce::FlexItem(IN).withMinWidth(400.0f).withMinHeight(200.0f));
-    freqVisualizers.items.add(juce::FlexItem(OUT).withMinWidth(400.0f).withMinHeight(200.0f));
+    juce::FlexBox content;
+    content.alignContent = juce::FlexBox::AlignContent::center;
+    content.justifyContent = juce::FlexBox::JustifyContent::spaceBetween;
 
-    freqVisualizers.performLayout(getLocalBounds().toFloat());
+    content.items.add(juce::FlexItem(*editor).withMinWidth(200.0f).withMinHeight(400.0f).withFlex(1));
+    content.items.add(juce::FlexItem(visualizePanel).withMinWidth(400.0f).withMinHeight(400.0f));
 
+    content.performLayout(getLocalBounds().toFloat());
 
+    // Main application panel
     juce::FlexBox main;
-    //main.flexWrap = juce::FlexBox::Wrap::wrap;
     main.alignContent = juce::FlexBox::AlignContent::center;
     main.justifyContent = juce::FlexBox::JustifyContent::spaceBetween;
+    main.flexDirection = juce::FlexBox::Direction::column;
 
-    main.items.add(juce::FlexItem(*editor).withMinWidth(400.0f).withMinHeight(400.0f));
-
-    if (State::GetInstance() -> getParameter("settings") -> getValue()) {
-        main.items.add(juce::FlexItem(*audioSettings).withMinWidth(400.0f).withMinHeight(400.0f));
-    }
-
-    main.items.add(juce::FlexItem(freqVisualizers).withMinWidth(600.0f).withMinHeight(400.0f));
+    main.items.add(juce::FlexItem(content).withFlex(1));
 
     main.performLayout(getLocalBounds().toFloat());
-    
+
 }

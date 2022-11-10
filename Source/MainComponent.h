@@ -7,6 +7,17 @@
 #include "PreprocessExample.h"
 #include "AnalyseExample.h"
 #include "ReconstructionExample.h"
+#include "ToolbarMenu.h"
+
+class OtherLookAndFeel : public juce::LookAndFeel_V4
+{
+public:
+    OtherLookAndFeel()
+    {
+        setColour(juce::Toolbar::backgroundColourId, juce::Colours::darkgreen);
+        setColour(juce::Slider::thumbColourId, juce::Colours::orange);
+    }
+};
 
 //==============================================================================
 /*
@@ -37,6 +48,8 @@ private:
     //==============================================================================
     // Your private member variables go here...
 
+    OtherLookAndFeel otherLookAndFeel;
+
     juce::AudioDeviceManager otherDeviceManager;
     std::unique_ptr<juce::AudioDeviceSelectorComponent> audioSettings;
     std::unique_ptr<SimulationEngine<PreprocessExample, AnalyseExample, ReconstructionExample>> engine;
@@ -47,3 +60,4 @@ private:
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };
+

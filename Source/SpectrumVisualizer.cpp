@@ -16,7 +16,7 @@ SpectrumVisualizer::~SpectrumVisualizer()
 
 void SpectrumVisualizer::paint(juce::Graphics& g) 
 {
-    g.fillAll(juce::Colours::black);
+    g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId).darker(0.95F));
 
     g.setOpacity(1.0f);
     g.setColour(juce::Colours::white);

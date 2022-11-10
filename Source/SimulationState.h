@@ -18,7 +18,7 @@ public:
     State(State& other) = delete;
     void operator=(const State&) = delete;
 
-    static AudioProcessorValueTreeState *Initialize(juce::AudioProcessor& processor);
-    static AudioProcessorValueTreeState *GetInstance();
+    static juce::AudioProcessorValueTreeState *Initialize(juce::AudioProcessor& processor);
+    static juce::AudioProcessorValueTreeState *GetInstance();
 };
 

@@ -1,43 +1,23 @@
-/*
-  ==============================================================================
 
-    SimulationEditor.cpp
-    Created: 3 Nov 2022 9:29:04am
-    Author:  chris
-
-  ==============================================================================
-*/
 
 #include "SimulationEditor.h"
 #include "SimulationState.h"
 
 SimulationEditor::SimulationEditor(juce::AudioProcessor& owner)
     : AudioProcessorEditor(owner),
-    buttonAttachment(*State::GetInstance(), "settings", settings),
-    gainSliderAttachment(*State::GetInstance(), "gain", gainSlider)
+    gainSlider("volume","Volume",0.0f,1.0f),
+    settings("settings","Settings",BinaryData::settings24_png,BinaryData::settings24_pngSize)
 {
-    addAndMakeVisible(gainSlider);
-    gainSlider.setRange(0.0f, 1.0f);
-    gainSlider.setSliderStyle(juce::Slider::Rotary);
+    addAndMakeVisible(menu = new MenuBar());
+    gainSlider.setSliderStyle(juce::Slider::LinearVertical);
 
-    addAndMakeVisible(settings);
-    settings.setClickingTogglesState(true);
-
-    juce::Logger::outputDebugString("Yoooooooooooo-------");
+    menu->addItem(gainSlider);
+    menu->addItem(settings);
 }
 
 SimulationEditor::~SimulationEditor() {
 
 }
-
-//void SimulationEditor::updateToggleState(juce::Button* button, juce::String name)
-//{
-//    auto state = button->getToggleState();
-//}
-
-//void SimulationEditor::setCallback(void (*callback)(void)) {
-//    button.onClick = [this,callback] { callback(&button, "Gate"); };
-//}
 
 //==============================================================================
 void SimulationEditor::paint(juce::Graphics& g) {
@@ -46,23 +26,24 @@ void SimulationEditor::paint(juce::Graphics& g) {
 
 void SimulationEditor::resized()
 {
-    juce::FlexBox fb;
-    fb.flexWrap = juce::FlexBox::Wrap::wrap;
-    fb.justifyContent = juce::FlexBox::JustifyContent::flexStart;
-    fb.alignContent = juce::FlexBox::AlignContent::center;
-    fb.flexDirection = juce::FlexBox::Direction::column;
+    juce::FlexBox editorPanels;
 
-    fb.items.add(juce::FlexItem(settings).withMinWidth(100.0f).withMinHeight(50.0f));
-    fb.items.add(juce::FlexItem(gainSlider).withMinWidth(200.0f).withMinHeight(100.0f));
+    editorPanels.justifyContent = juce::FlexBox::JustifyContent::flexStart;
+    editorPanels.alignContent = juce::FlexBox::AlignContent::center;
 
-    fb.performLayout(getLocalBounds().toFloat());
+    editorPanels.items.add(juce::FlexItem(*menu).withMinHeight(getHeight()).withMinWidth(39));
+    editorPanels.performLayout(getLocalBounds().toFloat());
 
     repaint();
 }
 
+void SimulationEditor::setupSettingsModal(juce::AudioDeviceSelectorComponent* audioSettings) {
+    auto wrapper = new Component();
+    wrapper -> setSize(600,400);
 
-void SimulationEditor::timerCallback()
-{
+    settings.onClick = [this,audioSettings,wrapper] {
+        juce::DialogWindow::showDialog("Settings",audioSettings,wrapper,getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId),true);
+    };
 }
 
 void SimulationEditor::hostMIDIControllerIsAvailable(bool controllerIsAvailable)
@@ -75,12 +56,6 @@ int SimulationEditor::getControlParameterIndex(Component& control)
 }
 
 void SimulationEditor::updateTrackProperties()
-{
-
-}
-
-// called when the stored window size changes
-void SimulationEditor::valueChanged(juce::Value&)
 {
 
 }
