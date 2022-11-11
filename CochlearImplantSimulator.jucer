@@ -32,6 +32,10 @@
               file="Source/SimulationEngine.h"/>
       </GROUP>
       <GROUP id="{E5D0F0D6-DC17-1BB8-52E6-E864A8186E3E}" name="Components">
+        <FILE id="CoA6la" name="MediaPlayerComponent.cpp" compile="1" resource="0"
+              file="Source/MediaPlayerComponent.cpp"/>
+        <FILE id="A00Sdj" name="MediaPlayerComponent.h" compile="0" resource="0"
+              file="Source/MediaPlayerComponent.h"/>
         <FILE id="H3D7CV" name="SpectrumVisualizer.cpp" compile="1" resource="0"
               file="Source/SpectrumVisualizer.cpp"/>
         <FILE id="MG0QDO" name="SpectrumVisualizer.h" compile="0" resource="0"
@@ -43,7 +47,7 @@
       <FILE id="oZGBDV" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
     </GROUP>
   </MAINGROUP>
-  <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1"/>
+  <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_USE_MP3AUDIOFORMAT="1"/>
   <EXPORTFORMATS>
     <VS2022 targetFolder="Builds/VisualStudio2022">
       <CONFIGURATIONS>
