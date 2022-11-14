@@ -113,7 +113,7 @@ private:
             auto tmp = tempBlock->getSingleChannelBlock(i);
 
             // multiply with the fraction of number of channels to not blow our ears off
-            tmp.multiplyBy((1.0f / simulatedBlock.getNumChannels()));
+            tmp.multiplyBy((1.0f / tempBlock->getNumChannels()));
             simulatedBlock.add(tmp);
         }
 
