@@ -6,7 +6,6 @@ MainComponent::MainComponent(): juce::AudioAppComponent(otherDeviceManager)
 {
     setLookAndFeel(&otherLookAndFeel);
 
-
     engine.reset();
     
     if (engine.get() == nullptr) {
@@ -46,8 +45,14 @@ void MainComponent::prepareToPlay (int samplesPerBlockExpected, double sampleRat
     mediaPlayer.prepareMediaPlayer(samplesPerBlockExpected, sampleRate);
 }
 
-void MainComponent::getNextAudioBlock (const juce::AudioSourceChannelInfo& bufferToFill)
+void MainComponent::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill)
 {
+    if (bufferToFill.buffer == nullptr)
+    {
+        jassertfalse;
+        return;
+    }
+
     auto* device = deviceManager.getCurrentAudioDevice();
     auto inputChannels = device->getActiveInputChannels();
     auto outputChannels = device->getActiveOutputChannels();
@@ -61,23 +66,24 @@ void MainComponent::getNextAudioBlock (const juce::AudioSourceChannelInfo& buffe
 
     for (auto channel = 0; channel < maxOutputChannels; ++channel)
     {
-        
+
         //If there is no input or input and ouput channel do not match and not using media
-        if ((!outputChannels[channel] || maxInputChannels == 0 || !inputChannels[channel]) 
+        if ((!outputChannels[channel] || maxInputChannels == 0 || !inputChannels[channel])
             && mediaToggle.getToggleState() == false)
         {
             bufferToFill.buffer->clear(channel, bufferToFill.startSample, bufferToFill.numSamples);
         }
 
-		auto* buffer = bufferToFill.buffer->getReadPointer(channel, bufferToFill.startSample);
+        auto* buffer = bufferToFill.buffer->getReadPointer(channel, bufferToFill.startSample);
 
-		for (auto i = 0; i < bufferToFill.numSamples; ++i)
-		{
-			IN.pushNextSampleIntoFifo(buffer[i]);
-		}
+        for (auto i = 0; i < bufferToFill.numSamples; ++i)
+        {
+            IN.pushNextSampleIntoFifo(buffer[i]);
+        }
     }
 
     //Audio processing goes here...
+    engine->beginSimulationProcess(bufferToFill);
 
     for (auto channel = 0; channel < maxOutputChannels; ++channel)
     {

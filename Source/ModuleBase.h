@@ -1,11 +1,15 @@
 /*
   ==============================================================================
 
-    ParameterController.cpp
-    Created: 9 Nov 2022 2:07:03pm
+    ModuleBase.h
+    Created: 11 Nov 2022 10:19:11pm
     Author:  chris
 
   ==============================================================================
 */
 
-#include "ParameterController.h"
+#pragma once
+
+class ModuleBase {
+
+};

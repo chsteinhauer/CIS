@@ -37,7 +37,7 @@ void SpectrumVisualizer::drawNextFrameOfSpectrum()
 {
     // first apply a windowing function to our data
     window.multiplyWithWindowingTable(fftData, fftSize);     
-
+    
     // then render our FFT data..
     forwardFFT.performFrequencyOnlyForwardTransform(fftData, true);  
 

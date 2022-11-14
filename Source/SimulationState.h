@@ -1,8 +1,12 @@
 #pragma once
 #include <JuceHeader.h>
 
+typedef std::function<void()> cb_t;
+
+
 class State
 {
+
 
 private:
     static juce::AudioProcessorValueTreeState* pinstance_;
@@ -20,5 +24,6 @@ public:
 
     static juce::AudioProcessorValueTreeState *Initialize(juce::AudioProcessor& processor);
     static juce::AudioProcessorValueTreeState *GetInstance();
+    static int GetDenormalizedValue(std::string id);
 };
 
