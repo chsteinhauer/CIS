@@ -27,6 +27,10 @@
                 file="Source/ButterworthBandpass.cpp"/>
           <FILE id="qZQqLn" name="ButterworthBandpass.h" compile="0" resource="0"
                 file="Source/ButterworthBandpass.h"/>
+          <FILE id="r9n7Sb" name="EnvelopeExtractor.cpp" compile="1" resource="0"
+                file="Source/EnvelopeExtractor.cpp"/>
+          <FILE id="f7hJqx" name="EnvelopeExtractor.h" compile="0" resource="0"
+                file="Source/EnvelopeExtractor.h"/>
         </GROUP>
         <GROUP id="{CDB096EE-F6BA-2FAA-8F95-E7BC0F40B890}" name="Preprocess">
           <FILE id="VgYZL4" name="PreprocessExample.cpp" compile="1" resource="0"

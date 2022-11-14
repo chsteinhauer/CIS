@@ -19,8 +19,8 @@ void ButterworthBandpass::remakeFilters(int numChannels, int samplingFrequency)
 {
 	clearFilters();
 
-	auto lowFreq = 20;
-	auto highFreq = greenwood(0);
+	float lowFreq = 20.0;
+	float highFreq = greenwood(0);
 	int i = 1;
 	for (;;)
 	{
@@ -43,7 +43,7 @@ void ButterworthBandpass::remakeFilters(int numChannels, int samplingFrequency)
 		}
 
 		lowFreq = highFreq;
-		highFreq = greenwood(i / (numChannels - 1));
+		highFreq = greenwood((float)i / (numChannels - 1));
 		i++;
 	}
 }
@@ -66,20 +66,26 @@ void ButterworthBandpass::process(juce::dsp::AudioBlock<float> block)
 {
 	for (auto filters : lowPassArray)
 		for (int i = 0; i < filters->size(); i++)
-			(*filters)[0]->process(block.getSingleChannelBlock(i));
+		{
+			juce::dsp::ProcessContextReplacing<float> context(block.getSingleChannelBlock(i));
+			(*filters)[0]->process(context);
+		}
 
 	for (auto filters : highPassArray)
 		for (int i = 0; i < filters->size(); i++)
-			(*filters)[0]->process(block.getSingleChannelBlock(i));
+		{
+			juce::dsp::ProcessContextReplacing<float> context(block.getSingleChannelBlock(i));
+			(*filters)[0]->process(context);
+		}
 }
 
-//Constants for greenwood function applied to the human cochlear
-const float A = 165.4;
-const float a = 2.1;
-const float K = 0.88;
-
-float greenwood(float x)
+float ButterworthBandpass::greenwood(float x)
 {
+	//Constants for greenwood function applied to the human cochlear
+	const float A = 165.4f;
+	const float a = 2.1f;
+	const float K = 0.88f;
+
 	if (x > 1 || x < 0)
 	{
 		return -1;

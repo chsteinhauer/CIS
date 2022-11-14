@@ -24,4 +24,5 @@ private:
     juce::OwnedArray<juce::OwnedArray<juce::dsp::IIR::Filter<float>>> highPassArray;
 
     void clearFilters();
+    float greenwood(float x);
 };
