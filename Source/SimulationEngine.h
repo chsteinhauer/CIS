@@ -36,6 +36,7 @@ public:
     {
 
         jassert(!isUsingDoublePrecision());
+        if (tempBlock -> getNumChannels() < 1) return;
 
         // Store original buffer pointer in output block
         juce::dsp::AudioBlock<float> outputBlock(*bufferToFill.buffer, bufferToFill.startSample);
@@ -101,9 +102,13 @@ public:
 
 private:
 
+    // Adds the single channels together in simulatedBlock
     juce::dsp::AudioBlock<float> packBlockToOrgChannels() {
-        // Add the single channels together in simulatedBlock
-        juce::dsp::AudioBlock<float>& simulatedBlock(tempBlock->getSingleChannelBlock(0));
+        // Instantiate simulatedBlock with channel 0
+        juce::dsp::AudioBlock<float>& simulatedBlock(
+            tempBlock->getSingleChannelBlock(0).multiplyBy((1.0f / tempBlock->getNumChannels()))
+        );
+
         for (int i = 1; i < tempBlock->getNumChannels(); i++) {
             auto tmp = tempBlock->getSingleChannelBlock(i);
 
