@@ -6,11 +6,9 @@
   <MAINGROUP id="TcNcXX" name="CochlearImplantSimulator">
     <GROUP id="{5D28BEAE-AB3A-B242-30FA-A02311F821E6}" name="Source">
       <GROUP id="{88E46447-AC79-1767-C793-574406796478}" name="Resources">
-        <GROUP id="{FAEC6B46-0EBD-BCF4-EBE5-42AE16F01303}" name="Icons">
-          <FILE id="DssAun" name="audio-24.png" compile="0" resource="1" file="../../Stuff/audio-24.png"/>
-          <FILE id="K6uGNp" name="no-audio-24.png" compile="0" resource="1" file="../../Stuff/no-audio-24.png"/>
-          <FILE id="WWZtc1" name="settings-24.png" compile="0" resource="1" file="../../Stuff/icons8-settings-material-filled/settings-24.png"/>
-        </GROUP>
+        <FILE id="Cslyqp" name="settings-24.png" compile="0" resource="1" file="Resources/settings-24.png"/>
+        <FILE id="MZa2ko" name="audio-24.png" compile="0" resource="1" file="Resources/audio-24.png"/>
+        <FILE id="XiV20T" name="no-audio-24.png" compile="0" resource="1" file="Resources/no-audio-24.png"/>
       </GROUP>
       <GROUP id="{5CFE7F1E-118F-7390-57EA-887498C1E350}" name="Modules">
         <FILE id="TdiWhB" name="ModuleBase.h" compile="0" resource="0" file="Source/ModuleBase.h"/>
