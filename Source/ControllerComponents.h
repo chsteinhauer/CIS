@@ -23,12 +23,14 @@ struct SettingsButton : public juce::ImageButton {
 };
 
 struct Select : public juce::ComboBox {
-    Select();
+    Select(std::string id, std::string text);
     ~Select();
 
     void mouseEnter(const juce::MouseEvent& evt) override;
 
     void mouseExit(const juce::MouseEvent& evt) override;
+
+    juce::AudioProcessorValueTreeState::ComboBoxAttachment attachment;
 };
 
 struct VolumeSlider : public juce::Slider {

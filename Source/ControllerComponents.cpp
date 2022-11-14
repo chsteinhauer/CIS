@@ -39,6 +39,25 @@ void SettingsButton::mouseExit(const juce::MouseEvent& evt) {
     juce::ImageButton::mouseExit(evt);
 }
 
+Select::Select(std::string id, std::string text) : juce::ComboBox(id), attachment(*State::GetInstance(), id, *this) {
+    auto options = State::GetInstance()->getParameter(id);
+    auto items = options->getAllValueStrings();
+    auto defVal = (int)options->getDefaultValue();
+
+    addItemList(items, defVal);//(int)options->getDefaultValue());
+    setSize(200, 30);
+}
+Select::~Select() {}
+
+void Select::mouseEnter(const juce::MouseEvent& evt) {
+    setMouseCursor(juce::MouseCursor::PointingHandCursor);
+    juce::ComboBox::mouseEnter(evt);
+}
+
+void Select::mouseExit(const juce::MouseEvent& evt) {
+    setMouseCursor(juce::MouseCursor::NormalCursor);
+    juce::ComboBox::mouseExit(evt);
+}
 
 /* VolumeSlider */
 VolumeSlider::VolumeSlider() : attachment(*State::GetInstance(), "volume", *this) {

@@ -53,7 +53,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout State::createParameters() {
             juce::NormalisableRange<float>(0.0f, 1.0f), 1.0f),
         std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { "channelN",1 }, "Number of Channels",  
             juce::NormalisableRange<float>(0, 24), 6),
-        std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { "Fc",1 },       "Center Frequencies",        
+        std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { "Fc",      1 }, "Center Frequencies",        
             juce::NormalisableRange<float>(250, 4500, 0.f, 0.25f), 250),
     };
 }
