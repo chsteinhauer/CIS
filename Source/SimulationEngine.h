@@ -58,16 +58,19 @@ public:
         // Store original buffer pointer in output block
         juce::dsp::AudioBlock<float> outputBlock(*bufferToFill.buffer, bufferToFill.startSample);
 
+
+        juce::ScopedLock audioLock(audioCallbackLock);
+
         // Copy content of main block to N amount of channels in tempBlock
         copyBlockToNChannels(bufferToFill);
 
-        juce::ScopedLock audioLock(audioCallbackLock);
         // Run the simulation...!
         simulation.process(juce::dsp::ProcessContextReplacing<float>(*tempBlock.get()));
 
         // Pack processed data back to the original amount of channels
         auto simulatedBlock = packBlockToOrgChannels();
 
+        outputBlock.fill(0);
         // Now outputBlock may copy the results
         outputBlock.copyFrom(simulatedBlock);
     }

@@ -27,7 +27,7 @@ void ReconstructionExample::process(const juce::dsp::ProcessContextReplacing<flo
 	
 	for (int i = 0; i < N; i++)
 	{
-		auto freq = State::GetInstance()->getParameter("Fc")->convertFrom0to1(static_cast<float>(i+1) / N);
+		auto freq = State::GetInstance()->getParameter("Fc")->convertFrom0to1(static_cast<float>(i+1) / (N+1));
 		osc.setFrequency(freq);
 
 		float* data = copy->getChannelPointer(i);

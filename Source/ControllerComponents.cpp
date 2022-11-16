@@ -44,7 +44,7 @@ Select::Select(std::string id, std::string _label) : juce::ComboBox(id), attachm
     auto items = State::GetAllValueStrings(id);
     auto value = State::GetDenormalizedValue(id);
 
-    addItemList(items, (int)value);
+    addItemList(items, 1);
     setSize(200, 30);
 
     label.setText(_label,juce::dontSendNotification);
