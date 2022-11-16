@@ -23,6 +23,14 @@
                 file="Source/AnalyseExample.cpp"/>
           <FILE id="CIQc4x" name="AnalyseExample.h" compile="0" resource="0"
                 file="Source/AnalyseExample.h"/>
+          <FILE id="iGwchB" name="ButterworthBandpass.cpp" compile="1" resource="0"
+                file="Source/ButterworthBandpass.cpp"/>
+          <FILE id="qZQqLn" name="ButterworthBandpass.h" compile="0" resource="0"
+                file="Source/ButterworthBandpass.h"/>
+          <FILE id="r9n7Sb" name="EnvelopeExtractor.cpp" compile="1" resource="0"
+                file="Source/EnvelopeExtractor.cpp"/>
+          <FILE id="f7hJqx" name="EnvelopeExtractor.h" compile="0" resource="0"
+                file="Source/EnvelopeExtractor.h"/>
         </GROUP>
         <GROUP id="{CDB096EE-F6BA-2FAA-8F95-E7BC0F40B890}" name="Preprocess">
           <FILE id="VgYZL4" name="PreprocessExample.cpp" compile="1" resource="0"
@@ -46,6 +54,10 @@
               file="Source/SimulationState.h"/>
       </GROUP>
       <GROUP id="{E5D0F0D6-DC17-1BB8-52E6-E864A8186E3E}" name="Components">
+        <FILE id="zA6Ke5" name="AnalysisComponent.cpp" compile="1" resource="0"
+              file="Source/AnalysisComponent.cpp"/>
+        <FILE id="WRY0s9" name="AnalysisComponent.h" compile="0" resource="0"
+              file="Source/AnalysisComponent.h"/>
         <FILE id="FQYUlT" name="ControllerPanel.cpp" compile="1" resource="0"
               file="Source/ControllerPanel.cpp"/>
         <FILE id="qCIZwo" name="ControllerPanel.h" compile="0" resource="0"
