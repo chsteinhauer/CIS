@@ -24,6 +24,9 @@ public:
 
     static juce::AudioProcessorValueTreeState *Initialize(juce::AudioProcessor& processor);
     static juce::AudioProcessorValueTreeState *GetInstance();
-    static int GetDenormalizedValue(std::string id);
+    static juce::StringArray GetAllValueStrings(std::string id);
+    static float GetDenormalizedValue(std::string id);
+    static bool IsReadyToProcess();
+
 };
 

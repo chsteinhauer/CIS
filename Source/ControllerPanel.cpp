@@ -3,19 +3,19 @@
 
 ControllerPanel::ControllerPanel() : 
     sine("sine", "Sine processor"), 
-    noise("noise","Noise processor")
-    //channels("channelN","Select number of channels")
+    noise("noise","Noise processor"),
+    channels("channelN","Select number of channels")
 {
     addAndMakeVisible(sine);
     addAndMakeVisible(noise);
-    //addAndMakeVisible(channels);
+    addAndMakeVisible(channels);
 
     checkBoxes.alignItems = juce::FlexBox::AlignItems::flexStart;
     checkBoxes.flexDirection = juce::FlexBox::Direction::column;
 
+    checkBoxes.items.add(flexItem(&channels).withMargin({35,7,0,7}));
     checkBoxes.items.add(flexItem(&sine));
     checkBoxes.items.add(flexItem(&noise));
-    //checkBoxes.items.add(flexItem(&channels));
 }
 ControllerPanel::~ControllerPanel() {}
 

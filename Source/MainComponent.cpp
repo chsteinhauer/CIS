@@ -53,6 +53,8 @@ void MainComponent::getNextAudioBlock(const juce::AudioSourceChannelInfo& buffer
         return;
     }
 
+    //if (!State::IsReadyToProcess()) return;
+
     auto* device = deviceManager.getCurrentAudioDevice();
     auto inputChannels = device->getActiveInputChannels();
     auto outputChannels = device->getActiveOutputChannels();

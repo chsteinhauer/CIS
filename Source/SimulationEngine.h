@@ -11,25 +11,41 @@
 
 template<typename ModuleA, typename ModuleB, typename ModuleC>
 class SimulationEngine : public juce::AudioProcessor,
-                         public juce::dsp::ProcessorWrapper<juce::dsp::ProcessorChain<ModuleA, ModuleB, ModuleC>>
+                         public juce::AudioProcessorValueTreeState::Listener
 {
 public:
     SimulationEngine() : AudioProcessor(getBusesProperties()) {
         State::Initialize(*this);
+
+        State::GetInstance()->addParameterListener("channelN",this);
     }
     ~SimulationEngine() {}
 
-    void prepareToPlay(double sampleRate, int blockSize) override
+    void parameterChanged(const juce::String& parameterID, float newValue) {
+        if (parameterID == "channelN") {
+
+            juce::ScopedLock audioLock(audioCallbackLock);
+            simulation.reset();
+            simulation.prepare({ sampleRate, (juce::uint32)blockSize, (juce::uint32)newValue });
+            tempBlock.reset(new juce::dsp::AudioBlock<float>(tempBlockMemory, newValue, blockSize));
+        }
+    }
+
+    void prepareToPlay(double _sampleRate, int _blockSize) override
     {
+        sampleRate = _sampleRate;
+        blockSize = _blockSize;
+
         auto N = State::GetDenormalizedValue("channelN");
-        this->prepare({ sampleRate, (juce::uint32)blockSize, (juce::uint32)N });
 
         tempBlock.reset(new juce::dsp::AudioBlock<float>(tempBlockMemory, N, blockSize));
+        simulation.prepare({ sampleRate, (juce::uint32)blockSize, (juce::uint32)N });
     }
 
     void releaseResources() override
     {
-        this->juce::dsp::ProcessorWrapper<juce::dsp::ProcessorChain<ModuleA, ModuleB, ModuleC>>::reset();
+        //this->juce::dsp::ProcessorWrapper<juce::dsp::ProcessorChain<ModuleA, ModuleB, ModuleC>>::reset();
+        simulation.reset();
     }
 
     void beginSimulationProcess(const juce::AudioSourceChannelInfo& bufferToFill)
@@ -37,6 +53,7 @@ public:
 
         jassert(!isUsingDoublePrecision());
         if (tempBlock -> getNumChannels() < 1) return;
+
 
         // Store original buffer pointer in output block
         juce::dsp::AudioBlock<float> outputBlock(*bufferToFill.buffer, bufferToFill.startSample);
@@ -46,7 +63,7 @@ public:
 
         juce::ScopedLock audioLock(audioCallbackLock);
         // Run the simulation...!
-        this->process(juce::dsp::ProcessContextReplacing<float>(*tempBlock.get()));
+        simulation.process(juce::dsp::ProcessContextReplacing<float>(*tempBlock.get()));
 
         // Pack processed data back to the original amount of channels
         auto simulatedBlock = packBlockToOrgChannels();
@@ -121,6 +138,7 @@ private:
     }
 
     void copyBlockToNChannels(juce::AudioSourceChannelInfo bufferToFill) {
+
         auto N = tempBlock->getNumChannels();
         for (int i = 0; i < N; i++) {
             auto&& buffer = bufferToFill.buffer;
@@ -134,6 +152,11 @@ private:
     juce::CriticalSection audioCallbackLock;
     juce::HeapBlock<char> tempBlockMemory;
     std::unique_ptr<juce::dsp::AudioBlock<float>> tempBlock;
+
+    double sampleRate;
+    int blockSize;
+
+    juce::dsp::ProcessorChain<ModuleA, ModuleB, ModuleC> simulation;
 };
 
 

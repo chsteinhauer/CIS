@@ -1,76 +1,56 @@
 
 #include "ReconstructionExample.h"
 
+
+ReconstructionExample::ReconstructionExample() : osc([](float x) { return std::sin(x); }) { }
+ReconstructionExample::~ReconstructionExample() { }
+
 void ReconstructionExample::prepare(const juce::dsp::ProcessSpec& spec) {
-	int N = State::GetDenormalizedValue("channelN");
-	
-	oscillators.clear();
+	isPreparing = true;
 
-	for (int i = 0; i < N; i++)
-	{
-		juce::dsp::Oscillator<float>* osc = setupSinewave(i, N);
-		osc->prepare(spec);
-		oscillators.push_back(osc);
-	}
+	osc.prepare(spec);
+	copy = new Block(memory, spec.numChannels, spec.maximumBlockSize);
 
-	tempBlock = juce::dsp::AudioBlock<float>(tempBlockMemory, N, spec.maximumBlockSize);
-	noiseBlock = juce::dsp::AudioBlock<float>(noiseBlockMemory, N, spec.maximumBlockSize);
+	isPreparing = false;
 }
 
-void ReconstructionExample::process(const juce::dsp::ProcessContextReplacing< float >& context) {
-	tempBlock.copyFrom(context.getOutputBlock());
+void ReconstructionExample::process(const juce::dsp::ProcessContextReplacing<float>& context) {
 
-	for (int i = 0; i < tempBlock.getNumChannels(); i++)
+	bool sineEnabled = State::GetInstance()->getParameter("sine")->getValue();
+	bool noiseEnabled = State::GetInstance()->getParameter("noise")->getValue();
+
+	if (!sineEnabled && !noiseEnabled) return;
+
+	copy->copyFrom(context.getOutputBlock());
+	copy-> replaceWithAbsoluteValueOf(*copy);
+	int N = copy->getNumChannels();
+	
+	for (int i = 0; i < N; i++)
 	{
-		bool sineEnabled = State::GetInstance()->getParameter("sine")->getValue();
-		if (sineEnabled) {
-			juce::dsp::AudioBlock<float>& envelope(tempBlock.getSingleChannelBlock(i));
-			juce::dsp::ProcessContextReplacing<float> tmpContext(envelope);
+		auto freq = State::GetInstance()->getParameter("Fc")->convertFrom0to1(static_cast<float>(i+1) / N);
+		osc.setFrequency(freq);
 
-			auto osc = oscillators.at(i);
-			osc->process(tmpContext);
+		float* data = copy->getChannelPointer(i);
 
-			context.getOutputBlock().getSingleChannelBlock(i).add(tmpContext.getOutputBlock());
+		for (int j = 0; j < copy->getNumSamples(); j++)
+		{
+			float sine = 0, noise = 0;
+
+			if (sineEnabled)
+				sine = osc.processSample(0);
+
+			if (noiseEnabled)
+				noise =  random.nextFloat();
+
+			if (data != nullptr) {
+				data[j] = data[j] * sine + data[j] * noise;
+			}
 		}
 	}
 
-	bool noiseEnabled = State::GetInstance()->getParameter("noise")->getValue();
-	if (noiseEnabled) {
-		juce::dsp::AudioBlock<float>& envelope(tempBlock);
-		juce::dsp::ProcessContextReplacing<float> tmpContext(envelope);
-		generateNoise();
-
-		tmpContext.getOutputBlock().multiplyBy(noiseBlock);
-		context.getOutputBlock().add(tmpContext.getOutputBlock());
-	}
+	context.getOutputBlock().copyFrom(*copy);
 }
 
 void ReconstructionExample::reset() {
-
-	for (int i = 0; i < tempBlock.getNumChannels(); i++) {
-	
-		oscillators.at(i)->reset();
-	}
-}
-
-juce::dsp::Oscillator<float>* ReconstructionExample::setupSinewave(int index, int N) {
-	auto Fc = State::GetInstance()->getParameter("Fc")->convertFrom0to1(((float)index/N));
-	auto osc = new juce::dsp::Oscillator<float>(); 
-
-	osc->initialise([this](float x) { return std::sin(x); }, 128);
-	osc->setFrequency(Fc);
-
-	return osc;
-}
-
-void ReconstructionExample::generateNoise() {
-	for (int i = 0; i < noiseBlock.getNumSamples(); i++)
-	{
-		for (int j = 0; j < noiseBlock.getNumChannels(); j++)
-		{
-			auto value = random.nextFloat() * 0.25f - 0.125f;
-
-			noiseBlock.setSample(j,i,value);
-		}
-	}
+	osc.reset();
 }

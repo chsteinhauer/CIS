@@ -39,14 +39,20 @@ void SettingsButton::mouseExit(const juce::MouseEvent& evt) {
     juce::ImageButton::mouseExit(evt);
 }
 
-Select::Select(std::string id, std::string text) : juce::ComboBox(id), attachment(*State::GetInstance(), id, *this) {
-    auto options = State::GetInstance()->getParameter(id);
-    auto items = options->getAllValueStrings();
-    auto defVal = (int)options->getDefaultValue();
+Select::Select(std::string id, std::string _label) : juce::ComboBox(id), attachment(*State::GetInstance(), id, *this) {
+   // auto par = State::GetInstance()->getParameter(id);
+    auto items = State::GetAllValueStrings(id);
+    auto value = State::GetDenormalizedValue(id);
 
-    addItemList(items, defVal);//(int)options->getDefaultValue());
+    addItemList(items, (int)value);
     setSize(200, 30);
+
+    label.setText(_label,juce::dontSendNotification);
+    label.attachToComponent(this,false);
+
+    addAndMakeVisible(label);
 }
+
 Select::~Select() {}
 
 void Select::mouseEnter(const juce::MouseEvent& evt) {

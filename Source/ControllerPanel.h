@@ -19,7 +19,7 @@ private:
 
     juce::FlexBox checkBoxes;
 
-    //Select channels;
+    Select channels;
     CheckBox sine;
     CheckBox noise;
 

@@ -37,13 +37,13 @@ juce::AudioProcessorValueTreeState* State::Initialize(juce::AudioProcessor& proc
 juce::AudioProcessorValueTreeState* State::GetInstance()
 {
     std::lock_guard<std::mutex> lock(mutex_);
-
     return pinstance_;
 }
 
 juce::AudioProcessorValueTreeState::ParameterLayout State::createParameters() {
     return {
         // bools
+        std::make_unique<juce::AudioParameterBool>(juce::ParameterID  { "ready",   1 }, "Ready",     false),
         std::make_unique<juce::AudioParameterBool>(juce::ParameterID  { "audio",   1 }, "Audio",     false),
         std::make_unique<juce::AudioParameterBool>(juce::ParameterID  { "sine",    1 }, "Sine",      false),
         std::make_unique<juce::AudioParameterBool>(juce::ParameterID  { "noise",   1 }, "Noise",     false),
@@ -52,14 +52,30 @@ juce::AudioProcessorValueTreeState::ParameterLayout State::createParameters() {
         std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { "volume",  1 }, "Volume",
             juce::NormalisableRange<float>(0.0f, 1.0f), 1.0f),
         std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { "channelN",1 }, "Number of Channels",  
-            juce::NormalisableRange<float>(0, 24), 6),
+            juce::NormalisableRange<float>(0, 120, 1), 6),
         std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { "Fc",      1 }, "Center Frequencies",        
-            juce::NormalisableRange<float>(250, 4500, 0.f, 0.25f), 250),
+            juce::NormalisableRange<float>(250, 4500, 0.f, 0.1f), 250),
     };
 }
 
-int State::GetDenormalizedValue(std::string id) {
+float State::GetDenormalizedValue(std::string id) {
     auto par = State::GetInstance()->getParameter(id);
 
     return par->convertFrom0to1(par ->getValue());
 }
+
+juce::StringArray State::GetAllValueStrings(std::string id) {
+    auto par = State::GetInstance()->getParameterRange(id);
+
+    juce::StringArray values = juce::StringArray();
+
+    for (int val = par.start; val <= par.end; val += par.interval) {
+        values.add(juce::String(val));
+    }
+
+    return values;
+}
+
+bool State::IsReadyToProcess() {
+    return State::GetInstance()->getParameter("ready")->getValue() == 1;
+};

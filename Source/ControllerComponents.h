@@ -27,9 +27,9 @@ struct Select : public juce::ComboBox {
     ~Select();
 
     void mouseEnter(const juce::MouseEvent& evt) override;
-
     void mouseExit(const juce::MouseEvent& evt) override;
 
+    juce::Label label;
     juce::AudioProcessorValueTreeState::ComboBoxAttachment attachment;
 };
 
