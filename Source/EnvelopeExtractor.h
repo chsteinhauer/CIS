@@ -9,3 +9,17 @@
 */
 
 #pragma once
+
+#include <JuceHeader.h>
+
+class EnvelopeExtractor
+{
+public:
+    EnvelopeExtractor();
+
+    void halfwaveRectification(juce::dsp::AudioBlock<float> block);
+    void hilbertTransform(juce::dsp::AudioBlock<float> block);
+
+private:
+
+};
