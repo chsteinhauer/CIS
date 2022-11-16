@@ -26,7 +26,7 @@ public:
     static juce::AudioProcessorValueTreeState *GetInstance();
     static juce::StringArray GetAllValueStrings(std::string id);
     static float GetDenormalizedValue(std::string id);
-    static bool IsReadyToProcess();
+    static juce::NormalisableRange<float> freqRange(float min, float max);
 
 };
 

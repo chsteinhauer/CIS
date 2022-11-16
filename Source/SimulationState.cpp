@@ -54,7 +54,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout State::createParameters() {
         std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { "channelN",1 }, "Number of Channels",  
             juce::NormalisableRange<float>(0, 120, 1), 6),
         std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { "Fc",      1 }, "Center Frequencies",        
-            juce::NormalisableRange<float>(250, 4500, 0.f, 0.1f), 250),
+            juce::NormalisableRange<float>(250, 4500, 0.f, 0.25f), 250),
     };
 }
 
@@ -76,6 +76,8 @@ juce::StringArray State::GetAllValueStrings(std::string id) {
     return values;
 }
 
-bool State::IsReadyToProcess() {
-    return State::GetInstance()->getParameter("ready")->getValue() == 1;
-};
+juce::NormalisableRange<float> State::freqRange(float min, float max)
+{
+    auto range{ std::log2(max / min) };
+    return juce::NormalisableRange<float> (min, max, [=](float min, float, float v) { return std::exp2(v * range) * min; }, [=](float min, float, float v) { return std::log2(v / min) / range; });
+}

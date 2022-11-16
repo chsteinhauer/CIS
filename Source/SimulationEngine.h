@@ -72,7 +72,9 @@ public:
 
         outputBlock.fill(0);
         // Now outputBlock may copy the results
-        outputBlock.copyFrom(simulatedBlock);
+        for (int i = 0; i < outputBlock.getNumChannels(); i++) {
+            outputBlock.getSingleChannelBlock(i).copyFrom(simulatedBlock);
+        }
     }
 
     bool hasEditor() const override { return true; }
