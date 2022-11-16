@@ -6,12 +6,7 @@ ReconstructionExample::ReconstructionExample() : osc([](float x) { return std::s
 ReconstructionExample::~ReconstructionExample() { }
 
 void ReconstructionExample::prepare(const juce::dsp::ProcessSpec& spec) {
-	isPreparing = true;
-
 	osc.prepare(spec);
-	copy = new Block(memory, spec.numChannels, spec.maximumBlockSize);
-
-	isPreparing = false;
 }
 
 void ReconstructionExample::process(const juce::dsp::ProcessContextReplacing<float>& context) {
@@ -21,18 +16,17 @@ void ReconstructionExample::process(const juce::dsp::ProcessContextReplacing<flo
 
 	if (!sineEnabled && !noiseEnabled) return;
 
-	copy->copyFrom(context.getOutputBlock());
-	copy-> replaceWithAbsoluteValueOf(*copy);
-	int N = copy->getNumChannels();
+	Block block(context.getOutputBlock());
+	int N = block.getNumChannels();
 	
 	for (int i = 0; i < N; i++)
 	{
-		auto freq = State::GetInstance()->getParameter("Fc")->convertFrom0to1(static_cast<float>(i+1) / (N+1));
+		auto freq = State::GetInstance()->getParameter("Greenwood")->convertFrom0to1(static_cast<float>(i+1) / (N));
 		osc.setFrequency(freq);
 
-		float* data = copy->getChannelPointer(i);
+		float* data = block.getChannelPointer(i);
 
-		for (int j = 0; j < copy->getNumSamples(); j++)
+		for (int j = 0; j < block.getNumSamples(); j++)
 		{
 			float sine = 0, noise = 0;
 
@@ -40,15 +34,13 @@ void ReconstructionExample::process(const juce::dsp::ProcessContextReplacing<flo
 				sine = osc.processSample(0);
 
 			if (noiseEnabled)
-				noise =  random.nextFloat();
+				noise = random.nextFloat()*2-1;
 
 			if (data != nullptr) {
-				data[j] = data[j] * sine + data[j] * noise;
+				data[j] = data[j] * sine + data[j];
 			}
 		}
 	}
-
-	context.getOutputBlock().copyFrom(*copy);
 }
 
 void ReconstructionExample::reset() {

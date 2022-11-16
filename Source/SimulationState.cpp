@@ -49,12 +49,12 @@ juce::AudioProcessorValueTreeState::ParameterLayout State::createParameters() {
         std::make_unique<juce::AudioParameterBool>(juce::ParameterID  { "noise",   1 }, "Noise",     false),
 
         // ranges
-        std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { "volume",  1 }, "Volume",
+        std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { "volume",    1 }, "Volume",
             juce::NormalisableRange<float>(0.0f, 1.0f), 1.0f),
-        std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { "channelN",1 }, "Number of Channels",  
+        std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { "channelN",  1 }, "Number of Channels",  
             juce::NormalisableRange<float>(0, 120, 1), 6),
-        std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { "Fc",      1 }, "Center Frequencies",        
-            juce::NormalisableRange<float>(250, 4500, 0.f, 0.25f), 250),
+        std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { "Greenwood", 1 }, "Scaled Frequencies in Human Cochlear",        
+            getGreenwoodRange(), 20),
     };
 }
 
@@ -76,8 +76,35 @@ juce::StringArray State::GetAllValueStrings(std::string id) {
     return values;
 }
 
-juce::NormalisableRange<float> State::freqRange(float min, float max)
+juce::NormalisableRange<float> State::getGreenwoodRange() 
 {
-    auto range{ std::log2(max / min) };
-    return juce::NormalisableRange<float> (min, max, [=](float min, float, float v) { return std::exp2(v * range) * min; }, [=](float min, float, float v) { return std::log2(v / min) / range; });
+    float min = 20;
+    float max = greenwood(1);
+
+    return juce::NormalisableRange<float> (min, max, 
+        [=](float min, float, float v) { return greenwood(v); },
+        [=](float min, float, float v) { return inverseGreenwood(v); }
+    );
+}
+
+float State::inverseGreenwood(float x) {
+    const float A = 165.4f;
+    const float a = 2.1f;
+    const float K = 0.88f;
+
+    return (log10((x / A) + K) / a);
+}
+
+float State::greenwood(float x)
+{
+    //Constants for greenwood function applied to the human cochlear
+    const float A = 165.4f;
+    const float a = 2.1f;
+    const float K = 0.88f;
+
+    if (x > 1 || x < 0)
+    {
+        return -1;
+    }
+    return A * (pow(10, (a * x)) - K);
 }

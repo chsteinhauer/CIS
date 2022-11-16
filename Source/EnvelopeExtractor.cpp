@@ -10,13 +10,21 @@
 
 #include "EnvelopeExtractor.h"
 
-EnvelopeExtractor::EnvelopeExtractor()
+EnvelopeExtractor::EnvelopeExtractor() //: forwardFFT(fftOrder), window(fftSize, juce::dsp::WindowingFunction<float>::hann)
 {
-
+    
 }
 
-void EnvelopeExtractor::halfwaveRectification(juce::dsp::AudioBlock<float> block)
+void EnvelopeExtractor::prepareHalfwaveRectification(const juce::dsp::ProcessSpec& spec) {
+    iir.state = juce::dsp::IIR::Coefficients<float>::makeLowPass(spec.sampleRate, 250);
+    iir.prepare(spec);
+}
+
+void EnvelopeExtractor::halfwaveRectification(const juce::dsp::ProcessContextReplacing<float>& context)
 {
+    
+    juce::dsp::AudioBlock<float> block(context.getOutputBlock());
+
     for (int i = 0; i < block.getNumChannels(); i++)
     {
         for (int j = 0; j < block.getNumSamples(); j++)
@@ -32,6 +40,8 @@ void EnvelopeExtractor::halfwaveRectification(juce::dsp::AudioBlock<float> block
             }
         }
     }
+
+    iir.process(context);
 }
 
 void EnvelopeExtractor::hilbertTransform(juce::dsp::AudioBlock<float> block)

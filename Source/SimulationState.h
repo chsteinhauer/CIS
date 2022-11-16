@@ -17,6 +17,10 @@ protected:
     ~State();
 
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameters();
+    static float greenwood(float x);
+    static float inverseGreenwood(float x);
+    static juce::NormalisableRange<float> getGreenwoodRange();
+
 
 public:
     State(State& other) = delete;
@@ -26,7 +30,6 @@ public:
     static juce::AudioProcessorValueTreeState *GetInstance();
     static juce::StringArray GetAllValueStrings(std::string id);
     static float GetDenormalizedValue(std::string id);
-    static juce::NormalisableRange<float> freqRange(float min, float max);
 
 };
 

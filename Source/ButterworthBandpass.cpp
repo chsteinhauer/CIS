@@ -1,82 +1,87 @@
-/*
-  ==============================================================================
-
-	ButterworthBandpass.cpp
-	Created: 13 Nov 2022 12:11:38pm
-	Author:  Sonderbo
-
-  ==============================================================================
-*/
 
 #include "ButterworthBandpass.h"
+#include "SimulationState.h"
 
-ButterworthBandpass::ButterworthBandpass(int numChannels, int samplingFrequency)
-{
-	remakeFilters(numChannels, samplingFrequency);
+ButterworthBandpass::ButterworthBandpass() {
+	lowPassArray.reset(new FilterVector());
+	highPassArray.reset(new FilterVector());
 }
+ButterworthBandpass::~ButterworthBandpass() {}
 
 void ButterworthBandpass::remakeFilters(int numChannels, int samplingFrequency)
 {
-	clearFilters();
+	//clearFilters();
 
+	std::vector<float> freqs;
 	float lowFreq = 20.0;
-	float highFreq = greenwood(0);
+	float highFreq = State::GetInstance()->getParameter("Greenwood")->convertFrom0to1(0);
 	int i = 1;
 	for (;;)
 	{
-		juce::OwnedArray<juce::dsp::IIR::Filter<float>>* lowpass;
-		juce::OwnedArray<juce::dsp::IIR::Filter<float>>* highpass;
-
 		auto lowpassCoeffs = juce::dsp::FilterDesign<float>::designIIRLowpassHighOrderButterworthMethod(lowFreq, samplingFrequency, 6);
-		for (auto coeff : lowpassCoeffs)
-			lowpass->add(new juce::dsp::IIR::Filter<float>(coeff));
-		lowPassArray.add(lowpass);
+		
+		std::vector<juce::dsp::IIR::Filter<float>*> lowpass;
+		std::vector<juce::dsp::IIR::Filter<float>*> highpass;
+		for (auto coeff : lowpassCoeffs) {
+			lowpass.push_back(new juce::dsp::IIR::Filter<float>(coeff));
+		}
+		lowPassArray->push_back(lowpass);
 
 		auto highpassCoeffs = juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(highFreq, samplingFrequency, 6);
-		for (auto coeff : lowpassCoeffs)
-			highpass->add(new juce::dsp::IIR::Filter<float>(coeff));
-		highPassArray.add(highpass);
+		for (auto coeff : highpassCoeffs) {
+			highpass.push_back(new juce::dsp::IIR::Filter<float>(coeff));
+		}
+		highPassArray->push_back(highpass);
 
-		if (i + 1 < numChannels)
+		if (i > numChannels - 1)
 		{
 			break;
 		}
 
 		lowFreq = highFreq;
-		highFreq = greenwood((float)i / (numChannels - 1));
+		highFreq = State::GetInstance()->getParameter("Greenwood")->convertFrom0to1(static_cast<float>(i) / (numChannels-1)); //greenwood((float)i / (numChannels - 1));
 		i++;
 	}
 }
 
 void ButterworthBandpass::clearFilters()
 {
-	for (int i = 0; i < lowPassArray.size(); i++)
+	for (int i = 0; i < lowPassArray->size(); i++)
 	{
-		lowPassArray[i]->clear();
+		lowPassArray->at(i).clear();
 	}
-	lowPassArray.clear();
-	for (int i = 0; i < highPassArray.size(); i++)
+	lowPassArray->clear();
+	for (int i = 0; i < highPassArray->size(); i++)
 	{
-		highPassArray[i]->clear();
+		highPassArray->at(i).clear();
 	}
-	highPassArray.clear();
+	highPassArray->clear();
+
+	lowPassArray.reset(new FilterVector());
+	highPassArray.reset(new FilterVector());
 }
 
 void ButterworthBandpass::process(juce::dsp::AudioBlock<float> block)
 {
-	for (auto filters : lowPassArray)
-		for (int i = 0; i < filters->size(); i++)
-		{
-			juce::dsp::ProcessContextReplacing<float> context(block.getSingleChannelBlock(i));
-			(*filters)[0]->process(context);
-		}
+	int N = block.getNumChannels();
 
-	for (auto filters : highPassArray)
-		for (int i = 0; i < filters->size(); i++)
+	for (int i = 0; i < N; i++) {
+		const auto lowpass = lowPassArray->at(i);
+		const auto highpass = highPassArray->at(i);
+
+		if (lowpass.size() != highpass.size())
+			jassertfalse;
+
+		juce::dsp::ProcessContextReplacing<float> context(block.getSingleChannelBlock(i));
+		for (int j = 0; j < lowpass.size(); j++)
 		{
-			juce::dsp::ProcessContextReplacing<float> context(block.getSingleChannelBlock(i));
-			(*filters)[0]->process(context);
+			lowpass.at(j)->process(context);
+			highpass.at(j)->process(context);
 		}
+	}
+
+	// Some gains to actually hear something, scaled by channels
+	block.multiplyBy(150 + 10000 * exp(-N * 0.15));
 }
 
 float ButterworthBandpass::greenwood(float x)

@@ -18,11 +18,6 @@ public:
 private:
     juce::dsp::Oscillator<float> osc;
     juce::Random random;
-
-    juce::HeapBlock<char> memory;
-    Block* copy;
-
-    bool isPreparing = true;
 };
 
 

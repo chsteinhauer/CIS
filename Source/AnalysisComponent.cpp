@@ -1,12 +1,4 @@
-/*
-  ==============================================================================
 
-    AnalysisComponent.cpp
-    Created: 13 Nov 2022 9:34:18am
-    Author:  Sonderbo
-
-  ==============================================================================
-*/
 
 #include <JuceHeader.h>
 #include "AnalysisComponent.h"
