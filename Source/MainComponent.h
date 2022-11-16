@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <JuceHeader.h>
@@ -8,6 +9,16 @@
 #include "ReconstructionExample.h"
 #include "MediaPlayerComponent.h"
 
+class OtherLookAndFeel : public juce::LookAndFeel_V4
+{
+public:
+    OtherLookAndFeel()
+    {
+        setColour(juce::Toolbar::backgroundColourId, juce::Colours::darkgreen);
+        setColour(juce::Slider::thumbColourId, juce::Colours::orange);
+    }
+};
+
 //==============================================================================
 /*
     This component lives inside our window, and this is where you should put all
@@ -16,7 +27,6 @@
 
 class MainComponent  : public juce::AudioAppComponent
 {
-    
 
 public:
     //==============================================================================
@@ -33,16 +43,19 @@ public:
     void paint (juce::Graphics& g) override;
     void resized() override;
 
-    //==============================================================================
+    void GUISetup();
 
 private:
     //==============================================================================
     // Your private member variables go here...
 
+    OtherLookAndFeel otherLookAndFeel;
+
     juce::AudioDeviceManager otherDeviceManager;
     std::unique_ptr<juce::AudioDeviceSelectorComponent> audioSettings;
     std::unique_ptr<SimulationEngine<PreprocessExample, AnalyseExample, ReconstructionExample>> engine;
 
+    SimulationEditor* editor;
     SpectrumVisualizer IN;
     SpectrumVisualizer OUT;
 
@@ -53,3 +66,4 @@ private:
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };
+

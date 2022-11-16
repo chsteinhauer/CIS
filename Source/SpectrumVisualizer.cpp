@@ -16,7 +16,7 @@ SpectrumVisualizer::~SpectrumVisualizer()
 
 void SpectrumVisualizer::paint(juce::Graphics& g) 
 {
-    g.fillAll(juce::Colours::black);
+    g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId).darker(0.95F));
 
     g.setOpacity(1.0f);
     g.setColour(juce::Colours::white);
@@ -37,7 +37,7 @@ void SpectrumVisualizer::drawNextFrameOfSpectrum()
 {
     // first apply a windowing function to our data
     window.multiplyWithWindowingTable(fftData, fftSize);     
-
+    
     // then render our FFT data..
     forwardFFT.performFrequencyOnlyForwardTransform(fftData, true);  
 

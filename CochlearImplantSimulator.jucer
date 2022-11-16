@@ -5,7 +5,13 @@
               jucerFormatVersion="1">
   <MAINGROUP id="TcNcXX" name="CochlearImplantSimulator">
     <GROUP id="{5D28BEAE-AB3A-B242-30FA-A02311F821E6}" name="Source">
+      <GROUP id="{88E46447-AC79-1767-C793-574406796478}" name="Resources">
+        <FILE id="Cslyqp" name="settings-24.png" compile="0" resource="1" file="Resources/settings-24.png"/>
+        <FILE id="MZa2ko" name="audio-24.png" compile="0" resource="1" file="Resources/audio-24.png"/>
+        <FILE id="XiV20T" name="no-audio-24.png" compile="0" resource="1" file="Resources/no-audio-24.png"/>
+      </GROUP>
       <GROUP id="{5CFE7F1E-118F-7390-57EA-887498C1E350}" name="Modules">
+        <FILE id="TdiWhB" name="ModuleBase.h" compile="0" resource="0" file="Source/ModuleBase.h"/>
         <GROUP id="{F56E4CAD-CAC2-43B1-18F1-413855840F04}" name="Reconstruction">
           <FILE id="YAvlMq" name="ReconstructionExample.cpp" compile="1" resource="0"
                 file="Source/ReconstructionExample.cpp"/>
@@ -26,12 +32,30 @@
         </GROUP>
       </GROUP>
       <GROUP id="{4A39637A-A6AD-FE9E-9378-3AE2D2DE9C22}" name="SimulationEngine">
-        <FILE id="lX2Boy" name="SimulationEngine.cpp" compile="1" resource="0"
+        <FILE id="bpcEPs" name="SimulationEditor.cpp" compile="1" resource="0"
+              file="Source/SimulationEditor.cpp"/>
+        <FILE id="OeLvNA" name="SimulationEditor.h" compile="0" resource="0"
+              file="Source/SimulationEditor.h"/>
+        <FILE id="q1e6ok" name="SimulationEngine.cpp" compile="1" resource="0"
               file="Source/SimulationEngine.cpp"/>
-        <FILE id="wUVkin" name="SimulationEngine.h" compile="0" resource="0"
+        <FILE id="Evq0AH" name="SimulationEngine.h" compile="0" resource="0"
               file="Source/SimulationEngine.h"/>
+        <FILE id="gsQcbo" name="SimulationState.cpp" compile="1" resource="0"
+              file="Source/SimulationState.cpp"/>
+        <FILE id="wMynux" name="SimulationState.h" compile="0" resource="0"
+              file="Source/SimulationState.h"/>
       </GROUP>
       <GROUP id="{E5D0F0D6-DC17-1BB8-52E6-E864A8186E3E}" name="Components">
+        <FILE id="FQYUlT" name="ControllerPanel.cpp" compile="1" resource="0"
+              file="Source/ControllerPanel.cpp"/>
+        <FILE id="qCIZwo" name="ControllerPanel.h" compile="0" resource="0"
+              file="Source/ControllerPanel.h"/>
+        <FILE id="PyBDag" name="MenuBar.cpp" compile="1" resource="0" file="Source/MenuBar.cpp"/>
+        <FILE id="NVcoOV" name="MenuBar.h" compile="0" resource="0" file="Source/MenuBar.h"/>
+        <FILE id="JZccR5" name="ControllerComponents.cpp" compile="1" resource="0"
+              file="Source/ControllerComponents.cpp"/>
+        <FILE id="iAi2gP" name="ControllerComponents.h" compile="0" resource="0"
+              file="Source/ControllerComponents.h"/>
         <FILE id="CoA6la" name="MediaPlayerComponent.cpp" compile="1" resource="0"
               file="Source/MediaPlayerComponent.cpp"/>
         <FILE id="A00Sdj" name="MediaPlayerComponent.h" compile="0" resource="0"
