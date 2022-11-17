@@ -19,11 +19,12 @@ void ButterworthBandpass::remakeFilters(int numChannels, int samplingFrequency)
 {
 	clearFilters();
 
-	float lowFreq = 20.0;
-	float highFreq = greenwood(0);
-	int i = 1;
-	for (;;)
+	float lowFreq = greenwood(0);
+	float highFreq;
+	for (int i = 1; i <= numChannels; i++)
 	{
+		highFreq = greenwood((float)i / (numChannels));
+
 		juce::OwnedArray<juce::dsp::IIR::Filter<float>>* lowpass;
 		juce::OwnedArray<juce::dsp::IIR::Filter<float>>* highpass;
 
@@ -36,15 +37,7 @@ void ButterworthBandpass::remakeFilters(int numChannels, int samplingFrequency)
 		for (auto coeff : lowpassCoeffs)
 			highpass->add(new juce::dsp::IIR::Filter<float>(coeff));
 		highPassArray.add(highpass);
-
-		if (i + 1 < numChannels)
-		{
-			break;
-		}
-
 		lowFreq = highFreq;
-		highFreq = greenwood((float)i / (numChannels - 1));
-		i++;
 	}
 }
 
@@ -82,9 +75,14 @@ void ButterworthBandpass::process(juce::dsp::AudioBlock<float> block)
 float ButterworthBandpass::greenwood(float x)
 {
 	//Constants for greenwood function applied to the human cochlear
-	const float A = 165.4f;
+	/*const float A = 165.4f;
 	const float a = 2.1f;
-	const float K = 0.88f;
+	const float K = 0.88f;*/
+
+	//Adjusted constants for frequency range 250-4500Hz
+	const float A = 34.1f;
+	const float a = 2.1f;
+	const float K = -6.35f;
 
 	if (x > 1 || x < 0)
 	{
