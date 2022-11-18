@@ -20,13 +20,5 @@ public:
 
 private:
 
-    //juce::dsp::FFT forwardFFT;
-    //juce::dsp::WindowingFunction<float> window;
-
-    //float fifo[fftSize];
-    //float fftData[2 * fftSize];
-
-     
-
-    juce::dsp::ProcessorDuplicator<juce::dsp::IIR::Filter<float>, juce::dsp::IIR::Coefficients<float>> iir;
+    std::vector<std::unique_ptr<juce::dsp::IIR::Filter<float>>> filters;
 };

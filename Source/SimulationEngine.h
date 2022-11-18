@@ -44,7 +44,6 @@ public:
 
     void releaseResources() override
     {
-        //this->juce::dsp::ProcessorWrapper<juce::dsp::ProcessorChain<ModuleA, ModuleB, ModuleC>>::reset();
         simulation.reset();
     }
 
@@ -87,7 +86,9 @@ public:
 
     juce::AudioProcessorEditor* createEditor() override
     {
-        return new SimulationEditor(*this);
+        editor = new SimulationEditor(*this);
+
+        return editor;
     }
     
     /*Ignore this section, is they are primarily there to allow SimulatorEngine to inherit AudioProcessor
@@ -161,6 +162,7 @@ private:
     double sampleRate;
     int blockSize;
 
+    SimulationEditor* editor;
     juce::dsp::ProcessorChain<ModuleA, ModuleB, ModuleC> simulation;
 };
 

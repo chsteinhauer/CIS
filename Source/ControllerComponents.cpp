@@ -39,7 +39,7 @@ void SettingsButton::mouseExit(const juce::MouseEvent& evt) {
     juce::ImageButton::mouseExit(evt);
 }
 
-Select::Select(std::string id, std::string _label) : juce::ComboBox(id), attachment(*State::GetInstance(), id, *this) {
+Select::Select(std::string id, std::string _label = "") : juce::ComboBox(id), attachment(*State::GetInstance(), id, *this) {
    // auto par = State::GetInstance()->getParameter(id);
     auto items = State::GetAllValueStrings(id);
     auto value = State::GetDenormalizedValue(id);
@@ -47,8 +47,10 @@ Select::Select(std::string id, std::string _label) : juce::ComboBox(id), attachm
     addItemList(items, 1);
     setSize(200, 30);
 
-    label.setText(_label,juce::dontSendNotification);
-    label.attachToComponent(this,false);
+    if (_label != "") {
+        label.setText(_label, juce::dontSendNotification);
+        label.attachToComponent(this, false);
+    }
 
     addAndMakeVisible(label);
 }
@@ -66,15 +68,22 @@ void Select::mouseExit(const juce::MouseEvent& evt) {
 }
 
 /* VolumeSlider */
-VolumeSlider::VolumeSlider() : attachment(*State::GetInstance(), "volume", *this) {
-    auto par = State::GetInstance()->getParameterRange("volume");
+VolumeSlider::VolumeSlider(std::string id, std::string _label) : attachment(*State::GetInstance(), id, *this) {
+    auto par = State::GetInstance()->getParameterRange(id);
 
     // default slider config
     setRange(par.start, par.end, par.interval);
     setTextBoxStyle(juce::Slider::NoTextBox, true, 0, 0);
-    setSize(100, 25);
-    
+    setSize(150, 50);
+
+    if (!_label.empty()) {
+        label.setText(_label, juce::dontSendNotification);
+        label.attachToComponent(this, false);
+    }
+
+    addAndMakeVisible(label);
 }
+
 VolumeSlider::~VolumeSlider() {}
 
 void VolumeSlider::mouseDown(const juce::MouseEvent& evt) {

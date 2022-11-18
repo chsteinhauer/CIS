@@ -3,6 +3,7 @@
 
 #include <JuceHeader.h>
 #include "SimulationState.h"
+#include "ButterworthBandpass.h"
 
 using Block = juce::dsp::AudioBlock<float>;
 
@@ -16,8 +17,22 @@ public:
     void reset();
 
 private:
-    juce::dsp::Oscillator<float> osc;
-    juce::Random random;
+
+    struct Synthesis {
+        Synthesis();
+        ~Synthesis();
+
+        void prepare(const juce::dsp::ProcessSpec& spec);
+        void process(const juce::dsp::ProcessContextReplacing<float>& context);
+        void reset();
+
+        juce::dsp::Oscillator<float> osc;
+        juce::Random random;
+        juce::dsp::Gain<float> gain;
+    };
+
+    ButterworthBandpass butterworth;
+    Synthesis synth;
 };
 
 

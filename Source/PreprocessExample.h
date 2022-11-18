@@ -10,6 +10,6 @@ public:
     void reset();
 
 private:
-    //juce::dsp::ProcessorDuplicator<juce::dsp::IIR::Filter<float>,juce::dsp::IIR::Coefficients<float>> iir;
+    juce::dsp::ProcessorDuplicator<juce::dsp::IIR::Filter<float>,juce::dsp::IIR::Coefficients<float>> iir;
 };
 

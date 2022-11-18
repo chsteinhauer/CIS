@@ -18,13 +18,10 @@ public:
     void clearFilters();
 
 private:
-    struct Butterworth {
-        std::vector<juce::dsp::IIR::Filter<float>*> filters;
-    };
-
-
     std::unique_ptr<FilterVector> lowPassArray;
     std::unique_ptr <FilterVector> highPassArray;
 
     float greenwood(float x);
+
+    //std::unique_ptr<FilterVector> bandpasses;
 };

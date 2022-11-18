@@ -18,7 +18,6 @@ struct SettingsButton : public juce::ImageButton {
     ~SettingsButton();
 
     void mouseEnter(const juce::MouseEvent& evt) override;
-
     void mouseExit(const juce::MouseEvent& evt) override;
 };
 
@@ -34,15 +33,14 @@ struct Select : public juce::ComboBox {
 };
 
 struct VolumeSlider : public juce::Slider {
-    VolumeSlider();
+    VolumeSlider(std::string id, std::string _label);
     ~VolumeSlider();
 
     void mouseDown(const juce::MouseEvent& evt) override;
-
     void mouseUp(const juce::MouseEvent& evt) override;
 
     juce::AudioProcessorValueTreeState::SliderAttachment attachment;
-    juce::Image icon;
+    juce::Label label;
 };
 
 struct AudioToggleButton : public juce::ImageButton, juce::AudioProcessorValueTreeState::Listener {

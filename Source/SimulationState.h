@@ -19,7 +19,7 @@ protected:
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameters();
     static float greenwood(float x);
     static float inverseGreenwood(float x);
-    static juce::NormalisableRange<float> getGreenwoodRange();
+    static juce::NormalisableRange<float> getGreenwoodRange(float min, float max);
 
 
 public:

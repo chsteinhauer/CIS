@@ -56,13 +56,6 @@ private:
     std::unique_ptr<SimulationEngine<PreprocessExample, AnalyseExample, ReconstructionExample>> engine;
 
     SimulationEditor* editor;
-    SpectrumVisualizer IN;
-    SpectrumVisualizer OUT;
-
-    juce::ToggleButton mediaToggle;
-    MediaPlayerComponent mediaPlayer;
-
-    void mediaToggleButtonChanged();
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };

@@ -3,18 +3,26 @@
 #include "SimulationState.h"
 
 SimulationEditor::SimulationEditor(juce::AudioProcessor& owner)
-    : AudioProcessorEditor(owner)
+    : AudioProcessorEditor(owner),
+    volume("volume", "")
 {
     addAndMakeVisible(menu = new MenuBar());
+    volume.setSize(100, 25);
     volume.setSliderStyle(juce::Slider::LinearVertical);
 
     menu->addItemUp(audio);
     menu->addItemUp(volume);
     menu->addItemDown(settings);
 
-    addAndMakeVisible(ctlrPanel);
-    //addAndMakeVisible(sine);
-    //addAndMakeVisible(noise);
+    addAndMakeVisible(controllerPanel);
+    addAndMakeVisible(playerPanel);
+
+    panels.justifyContent = juce::FlexBox::JustifyContent::flexStart;
+    panels.alignContent = juce::FlexBox::AlignContent::center;
+
+    panels.items.add(juce::FlexItem(*menu).withMinHeight(getHeight()).withMinWidth(39));
+    panels.items.add(juce::FlexItem(controllerPanel).withFlex(1).withMargin(20));
+    panels.items.add(juce::FlexItem(playerPanel).withMinWidth(400.0f).withMinHeight(getHeight()).withMargin(20));
 }
 
 SimulationEditor::~SimulationEditor() {
@@ -28,23 +36,7 @@ void SimulationEditor::paint(juce::Graphics& g) {
 
 void SimulationEditor::resized()
 {
- /*   juce::FlexBox controllerPanel;
-
-    controllerPanel.justifyContent = juce::FlexBox::JustifyContent::flexStart;
-    controllerPanel.alignContent = juce::FlexBox::AlignContent::center;
-    controllerPanel.flexDirection = juce::FlexBox::Direction::column;
-
-    controllerPanel.items.add(juce::FlexItem(sine).withMinWidth(sine.getWidth()).withMinHeight(sine.getHeight()).withMargin(7));
-    controllerPanel.items.add(juce::FlexItem(noise).withMinWidth(noise.getWidth()).withMinHeight(noise.getHeight()).withMargin(7));*/
-
-    juce::FlexBox editorPanels;
-
-    editorPanels.justifyContent = juce::FlexBox::JustifyContent::flexStart;
-    editorPanels.alignContent = juce::FlexBox::AlignContent::center;
-
-    editorPanels.items.add(juce::FlexItem(*menu).withMinHeight(getHeight()).withMinWidth(39));
-    editorPanels.items.add(juce::FlexItem(ctlrPanel).withFlex(1).withMargin(20));
-    editorPanels.performLayout(getLocalBounds().toFloat());
+    panels.performLayout(getLocalBounds().toFloat());
 
     repaint();
 }
@@ -54,7 +46,13 @@ void SimulationEditor::setupSettingsModal(juce::AudioDeviceSelectorComponent* au
     wrapper -> setSize(600,400);
 
     settings.onClick = [this,audioSettings,wrapper] {
-        juce::DialogWindow::showDialog("Settings",audioSettings,wrapper,getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId),true);
+        juce::DialogWindow::showDialog(
+            "Settings",
+            audioSettings,
+            wrapper,
+            getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId),
+            true
+        );
     };
 }
 

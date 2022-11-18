@@ -4,6 +4,9 @@
 #include "ControllerComponents.h"
 #include "MenuBar.h"
 #include "ControllerPanel.h"
+#include "SpectrumVisualizer.h"
+#include "MediaPlayerComponent.h"
+#include "PlayerPanel.h"
 
 
 
@@ -22,12 +25,20 @@ public:
     void updateTrackProperties();
     void setupSettingsModal(juce::AudioDeviceSelectorComponent* audioSettings);
 
-private: 
-    ControllerPanel ctlrPanel;
 
+    juce::FlexBox panels;
+
+    // Left panel: menu bar and menu items
     MenuBar* menu;
 
     SettingsButton settings;
     AudioToggleButton audio;
     VolumeSlider volume;
+
+    // Middle panel: control components
+    ControllerPanel controllerPanel;
+
+    // Right panel: player & visuals
+    PlayerPanel playerPanel;
+ 
 };

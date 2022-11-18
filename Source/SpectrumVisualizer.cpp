@@ -39,7 +39,7 @@ void SpectrumVisualizer::drawNextFrameOfSpectrum()
     window.multiplyWithWindowingTable(fftData, fftSize);     
     
     // then render our FFT data..
-    forwardFFT.performFrequencyOnlyForwardTransform(fftData, true);  
+    forwardFFT.performFrequencyOnlyForwardTransform(fftData);  
 
     auto mindB = -100.0f;
     auto maxdB = 0.0f;
