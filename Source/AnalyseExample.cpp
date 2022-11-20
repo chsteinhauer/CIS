@@ -2,7 +2,7 @@
 #include "AnalyseExample.h"
 
 void AnalyseExample::prepare(const juce::dsp::ProcessSpec& spec) {
-    bandpass.remakeFilters(spec.numChannels,spec.sampleRate);
+    bandpass.remakeFilters(spec);
     extractor.prepareHalfwaveRectification(spec);
 }
 

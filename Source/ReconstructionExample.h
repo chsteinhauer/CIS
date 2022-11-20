@@ -29,10 +29,12 @@ private:
         juce::dsp::Oscillator<float> osc;
         juce::Random random;
         juce::dsp::Gain<float> gain;
+        double sampleRate;
     };
 
     ButterworthBandpass butterworth;
     Synthesis synth;
+
 };
 
 

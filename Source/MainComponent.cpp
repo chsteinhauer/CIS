@@ -53,8 +53,6 @@ void MainComponent::getNextAudioBlock(const juce::AudioSourceChannelInfo& buffer
         return;
     }
 
-    //if (!State::IsReadyToProcess()) return;
-
     auto* device = deviceManager.getCurrentAudioDevice();
     auto inputChannels = device->getActiveInputChannels();
     auto outputChannels = device->getActiveOutputChannels();
@@ -68,7 +66,6 @@ void MainComponent::getNextAudioBlock(const juce::AudioSourceChannelInfo& buffer
 
     for (auto channel = 0; channel < maxOutputChannels; ++channel)
     {
-
         //If there is no input or input and ouput channel do not match and not using media
         if ((!outputChannels[channel] || maxInputChannels == 0 || !inputChannels[channel])
             && editor->playerPanel.mediaToggle.getToggleState() == false)
@@ -87,18 +84,20 @@ void MainComponent::getNextAudioBlock(const juce::AudioSourceChannelInfo& buffer
     //Audio processing goes here...
     engine->beginSimulationProcess(bufferToFill);
 
-    for (auto channel = 0; channel < maxOutputChannels; ++channel)
-    {
-        auto* buffer = bufferToFill.buffer->getWritePointer(channel, bufferToFill.startSample);
-
-        for (auto i = 0; i < bufferToFill.numSamples; ++i)
+    if (!editor->playerPanel.outToggle.getToggleState()) {
+        for (auto channel = 0; channel < maxOutputChannels; ++channel)
         {
-            auto volume = State::GetInstance()->getParameter("volume")->getValue();
-            auto audio = State::GetInstance()->getParameter("audio")->getValue();
+            auto* buffer = bufferToFill.buffer->getWritePointer(0, bufferToFill.startSample);
 
-            buffer[i] = buffer[i] * volume * !audio;
+            for (auto i = 0; i < bufferToFill.numSamples; ++i)
+            {
+                auto volume = State::GetInstance()->getParameter("volume")->getValue();
+                auto audio = State::GetInstance()->getParameter("audio")->getValue();
 
-            editor -> playerPanel.OUT.pushNextSampleIntoFifo(buffer[i]);
+                buffer[i] = buffer[i] * volume * !audio;
+
+                editor->playerPanel.OUT.pushNextSampleIntoFifo(buffer[i]);
+            }
         }
     }
 }
@@ -119,9 +118,8 @@ void MainComponent::GUISetup() {
     editor->setupSettingsModal(audioSettings.get());
 
     // Initial size of application
-    setSize(1000, 600);
+    setSize(1400, 600);
 }
-
 
 void MainComponent::paint (juce::Graphics& g)
 {

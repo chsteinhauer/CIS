@@ -16,6 +16,7 @@ public:
     {
         setColour(juce::Toolbar::backgroundColourId, juce::Colours::darkgreen);
         setColour(juce::Slider::thumbColourId, juce::Colours::orange);
+        setColour(juce::Slider::trackColourId, findColour(juce::Slider::trackColourId).darker(0.1F));
     }
 };
 

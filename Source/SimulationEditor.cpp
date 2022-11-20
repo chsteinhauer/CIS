@@ -17,12 +17,20 @@ SimulationEditor::SimulationEditor(juce::AudioProcessor& owner)
     addAndMakeVisible(controllerPanel);
     addAndMakeVisible(playerPanel);
 
-    panels.justifyContent = juce::FlexBox::JustifyContent::flexStart;
+
+    content.justifyContent = juce::FlexBox::JustifyContent::flexStart;
+    content.alignContent = juce::FlexBox::AlignContent::center;
+    content.flexDirection = juce::FlexBox::Direction::column;
+
+    content.items.add(juce::FlexItem(playerPanel).withFlex(1).withMargin(20)); // withMinWidth(400.0f).withMinHeight(getHeight()).withMargin(20));
+    content.items.add(juce::FlexItem(controllerPanel).withMaxHeight(300).withFlex(1).withMargin(20));
+
+    panels.justifyContent = juce::FlexBox::JustifyContent::center;
     panels.alignContent = juce::FlexBox::AlignContent::center;
 
     panels.items.add(juce::FlexItem(*menu).withMinHeight(getHeight()).withMinWidth(39));
-    panels.items.add(juce::FlexItem(controllerPanel).withFlex(1).withMargin(20));
-    panels.items.add(juce::FlexItem(playerPanel).withMinWidth(400.0f).withMinHeight(getHeight()).withMargin(20));
+    panels.items.add(juce::FlexItem(content).withFlex(1).withMaxHeight(800).withMaxWidth(1600));
+    
 }
 
 SimulationEditor::~SimulationEditor() {
@@ -30,15 +38,12 @@ SimulationEditor::~SimulationEditor() {
 }
 
 //==============================================================================
-void SimulationEditor::paint(juce::Graphics& g) {
-    //g.fillAll(juce::Colours::transparentBlack);
-}
+void SimulationEditor::paint(juce::Graphics& g) { }
 
 void SimulationEditor::resized()
 {
+    content.performLayout(getLocalBounds().toFloat());
     panels.performLayout(getLocalBounds().toFloat());
-
-    repaint();
 }
 
 void SimulationEditor::setupSettingsModal(juce::AudioDeviceSelectorComponent* audioSettings) {

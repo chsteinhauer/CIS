@@ -40,5 +40,8 @@ public:
 
     // Right panel: player & visuals
     PlayerPanel playerPanel;
+
+    juce::FlexBox content;
+
  
 };

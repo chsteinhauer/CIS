@@ -22,11 +22,12 @@ ControllerPanel::ControllerPanel() :
     setupChannelControllers();
 
     panel.alignItems = juce::FlexBox::AlignItems::flexStart;
-    panel.flexDirection = juce::FlexBox::Direction::column;
+    //panel.flexDirection = juce::FlexBox::Direction::column;
     panel.justifyContent = juce::FlexBox::JustifyContent::flexStart;
 
-    panel.items.add(juce::FlexItem(checkBoxes).withMargin(14).withFlex(1));
-    panel.items.add(juce::FlexItem(channelControllers).withMargin(14).withFlex(1));//.withMinWidth(getWidth()-14).withMinHeight(getHeight()-28).withFlex(1));
+    panel.items.add(juce::FlexItem(channelControllers).withMargin(14).withFlex(1));
+    panel.items.add(juce::FlexItem(checkBoxes).withMinHeight(200).withMinWidth(300).withMargin(14));
+
 
     channels.onChange = [this] { resized(); };
 }
@@ -34,8 +35,19 @@ ControllerPanel::~ControllerPanel() {}
 
 void ControllerPanel::paint(juce::Graphics& g) {
     g.setColour(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId).brighter(0.1F));
-    g.fillRoundedRectangle(0, 0, getWidth(), (getHeight() / static_cast<float>(2))-7, 10.0f);
-    g.fillRoundedRectangle(0, (getHeight() / static_cast<float>(2)) + 7, getWidth(), (getHeight() / static_cast<float>(2)) - 7, 10.0f);
+    // Upper section
+    //g.fillRoundedRectangle(0, 0, getWidth(), (getHeight() / static_cast<float>(2))-7, 10.0f);
+    // Lower section
+    //g.fillRoundedRectangle(0, (getHeight() / static_cast<float>(2)) + 7, getWidth(), (getHeight() / static_cast<float>(2)) - 7, 10.0f);
+
+    // Rectangles around the sliders
+
+    g.setColour(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId).darker(0.1F));
+    for (int i = 0; i < 100; i++) {
+        auto r = sliders.at(i)->getBounds();
+
+        g.fillRoundedRectangle(r.getX(),r.getY(),r.getWidth(),r.getHeight()+5, 10.0f);
+    }
 }
 
 void ControllerPanel::resized() {

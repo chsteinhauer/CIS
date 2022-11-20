@@ -51,29 +51,39 @@ public:
     {
 
         jassert(!isUsingDoublePrecision());
-        if (tempBlock -> getNumChannels() < 1) return;
 
 
-        // Store original buffer pointer in output block
+        //// Store original buffer pointer in output block
         juce::dsp::AudioBlock<float> outputBlock(*bufferToFill.buffer, bufferToFill.startSample);
-
 
         juce::ScopedLock audioLock(audioCallbackLock);
 
-        // Copy content of main block to N amount of channels in tempBlock
-        copyBlockToNChannels(bufferToFill);
+        if (tempBlock->getNumChannels() > 0) {
 
-        // Run the simulation...!
-        simulation.process(juce::dsp::ProcessContextReplacing<float>(*tempBlock.get()));
 
-        // Pack processed data back to the original amount of channels
-        auto simulatedBlock = packBlockToOrgChannels();
+            //// Copy content of main block to N amount of channels in tempBlock
+            copyBlockToNChannels(bufferToFill);
 
-        outputBlock.fill(0);
-        // Now outputBlock may copy the results
-        for (int i = 0; i < outputBlock.getNumChannels(); i++) {
-            outputBlock.getSingleChannelBlock(i).copyFrom(simulatedBlock);
+            //// Run the simulation...!
+            simulation.process(juce::dsp::ProcessContextReplacing<float>(*tempBlock));
+
+            //// Pack processed data back to the original amount of channels
+            auto simulatedBlock = packBlockToOrgChannels();
+
+            outputBlock.fill(0);
+
+            // Now outputBlock may copy the results
+            for (int i = 0; i < outputBlock.getNumChannels(); i++) {
+                outputBlock.getSingleChannelBlock(i).copyFrom(simulatedBlock);
+            }
         }
+       /* else {
+
+            auto volume = State::GetInstance()->getParameter("volume")->getValue();
+            auto audio = State::GetInstance()->getParameter("audio")->getValue();
+
+            outputBlock.multiplyBy(volume * !audio);
+        }*/
     }
 
     bool hasEditor() const override { return true; }
@@ -124,16 +134,30 @@ public:
     }
 
 private:
+    void samplesToOutputVisualizer(juce::dsp::AudioBlock<float> block, int channel) {
+        if (!editor->playerPanel.outToggle.getToggleState()) return;
+
+        for (int j = 0; j < block.getNumSamples(); j++) {
+            editor->playerPanel.OUT_CHANNELS.pushNextSampleIntoFifoTable(channel, block.getSample(0, j));
+        }
+    }
 
     // Adds the single channels together in simulatedBlock
     juce::dsp::AudioBlock<float> packBlockToOrgChannels() {
+        auto volume = State::GetInstance()->getParameter("volume")->getValue();
+        auto audio = State::GetInstance()->getParameter("audio")->getValue();
+
+        auto tmp = tempBlock->getSingleChannelBlock(0);
+        samplesToOutputVisualizer(tmp.multiplyBy(volume * !audio), 0);
+
         // Instantiate simulatedBlock with channel 0
         juce::dsp::AudioBlock<float>& simulatedBlock(
-            tempBlock->getSingleChannelBlock(0).multiplyBy((1.0f / tempBlock->getNumChannels()))
+            tmp.multiplyBy((1.0f / tempBlock->getNumChannels()))
         );
 
         for (int i = 1; i < tempBlock->getNumChannels(); i++) {
             auto tmp = tempBlock->getSingleChannelBlock(i);
+            samplesToOutputVisualizer(tmp.multiplyBy(volume * !audio),i);
 
             // multiply with the fraction of number of channels to not blow our ears off
             tmp.multiplyBy((1.0f / tempBlock->getNumChannels()));

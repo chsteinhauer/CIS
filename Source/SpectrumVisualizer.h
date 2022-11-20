@@ -3,12 +3,12 @@
 #include <JuceHeader.h>
 
 #pragma once
-class SpectrumVisualizer  : public juce::Component, private juce::Timer {
+class SpectrumVisualizer  : public juce::Component, public juce::Timer {
     enum
     {
-        fftOrder = 11,
+        fftOrder = 12,
         fftSize = 1 << fftOrder,
-        scopeSize = 512
+        scopeSize = 512,
     };
 
     public:
@@ -23,6 +23,8 @@ class SpectrumVisualizer  : public juce::Component, private juce::Timer {
 
         void setTitle(std::string str);
         void pushNextSampleIntoFifo(float sample) noexcept;
+
+        int numChannels;
 
     private:
         juce::dsp::FFT forwardFFT;

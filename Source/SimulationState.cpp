@@ -26,6 +26,15 @@ juce::AudioProcessorValueTreeState* State::Initialize(juce::AudioProcessor& proc
     {
         auto no = new juce::AudioProcessorValueTreeState(processor, nullptr, "state", State::createParameters());
         pinstance_ = no;
+
+        for (int i = 0; i < maxNumChannels; i++) {
+            // generate random colours
+            colours[i] = juce::Colour(
+                (double)std::rand() / RAND_MAX * 255,
+                (double)std::rand() / RAND_MAX * 255,
+                (double)std::rand() / RAND_MAX * 255
+            );
+        }
     }
     return pinstance_;
 }
@@ -51,15 +60,17 @@ juce::AudioProcessorValueTreeState::ParameterLayout State::createParameters() {
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{ "volume",    1 }, "Volume",
         juce::NormalisableRange<float>(0.0f, 1.0f), 1.0f));
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{ "channelN",  1 }, "Number of Channels",
-        juce::NormalisableRange<float>(0, 100, 1), 0));
+        juce::NormalisableRange<float>(0, maxNumChannels, 1), 0));
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{ "Greenwood", 1 }, "Scaled Frequencies in Human Cochlear",
         getGreenwoodRange(greenwood(0), greenwood(1)), 20));
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{ "fcenter", 1 }, "Center Frequency",
         juce::NormalisableRange<float>(450, 4500, 0.f, 1.f / std::log2(1.f + std::sqrt(4500 / 250))), 250));
 
+
     // Gain sliders
-    for (int i = 1; i <= 100; i++)
-        layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{ "channel" + std::to_string(i), 1}, "Channel " + juce::String(i), 0.0f, 1.0f, 0.5f));
+    for (int i = 1; i <= maxNumChannels; i++) {
+        layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{ "channel" + std::to_string(i), 1 }, "Channel " + juce::String(i), 0.0f, 1.0f, 1.0f));
+    }
 
     return layout;
 }

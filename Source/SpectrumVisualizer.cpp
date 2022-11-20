@@ -51,14 +51,12 @@ void SpectrumVisualizer::drawNextFrameOfSpectrum()
         auto level = juce::jmap(juce::jlimit(mindB, maxdB, juce::Decibels::gainToDecibels(fftData[fftDataIndex])
             - juce::Decibels::gainToDecibels((float)fftSize)),
             mindB, maxdB, 0.0f, 1.0f);
-        scopeData[i] = pow(level,2);
+        scopeData[i] = level;
     }
 }
 
 void SpectrumVisualizer::drawFrame(juce::Graphics& g) {
     g.drawSingleLineText(title, 10, 20);
-
-    
 
     for (int i = 1; i < scopeSize; ++i)
     {
@@ -66,9 +64,9 @@ void SpectrumVisualizer::drawFrame(juce::Graphics& g) {
         auto height = getLocalBounds().getHeight();
 
         g.drawLine({ (float)juce::jmap(i - 1, 0, scopeSize - 1, 0, width),
-                              juce::jmap(scopeData[i - 1], 0.0f, 1.0f, (float)height-10, 0.0f),
+                              juce::jmap(scopeData[i - 1], 0.0f, 1.0f, (float)height, 0.0f),
                       (float)juce::jmap(i,     0, scopeSize - 1, 0, width),
-                              juce::jmap(scopeData[i],     0.0f, 1.0f, (float)height-10, 0.0f) });
+                              juce::jmap(scopeData[i],     0.0f, 1.0f, (float)height, 0.0f) });
     }
 }
 

@@ -6,9 +6,8 @@ typedef std::function<void()> cb_t;
 
 class State
 {
-
-
 private:
+
     static juce::AudioProcessorValueTreeState* pinstance_;
     static std::mutex mutex_;
 
@@ -23,6 +22,9 @@ protected:
 
 
 public:
+    const static int maxNumChannels = 100;
+    static juce::Colour colours[maxNumChannels];
+
     State(State& other) = delete;
     void operator=(const State&) = delete;
 
