@@ -5,7 +5,7 @@
 SpectrumVisualizer::SpectrumVisualizer() : forwardFFT(fftOrder), window(fftSize, juce::dsp::WindowingFunction<float>::hann)
 {
     setOpaque(true);
-    startTimerHz(30);
+    startTimerHz(20);
     setSize(400, 200);
 }
 
@@ -16,9 +16,9 @@ SpectrumVisualizer::~SpectrumVisualizer()
 
 void SpectrumVisualizer::paint(juce::Graphics& g) 
 {
-    g.fillAll(juce::Colours::black);
+    g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId).darker(0.95F));
 
-    g.setOpacity(1.0f);
+    g.setOpacity(0.9f);
     g.setColour(juce::Colours::white);
     drawFrame(g);
 }
@@ -37,9 +37,9 @@ void SpectrumVisualizer::drawNextFrameOfSpectrum()
 {
     // first apply a windowing function to our data
     window.multiplyWithWindowingTable(fftData, fftSize);     
-
+    
     // then render our FFT data..
-    forwardFFT.performFrequencyOnlyForwardTransform(fftData, true);  
+    forwardFFT.performFrequencyOnlyForwardTransform(fftData);  
 
     auto mindB = -100.0f;
     auto maxdB = 0.0f;
@@ -58,17 +58,15 @@ void SpectrumVisualizer::drawNextFrameOfSpectrum()
 void SpectrumVisualizer::drawFrame(juce::Graphics& g) {
     g.drawSingleLineText(title, 10, 20);
 
-    
-
     for (int i = 1; i < scopeSize; ++i)
     {
         auto width = getLocalBounds().getWidth();
         auto height = getLocalBounds().getHeight();
 
         g.drawLine({ (float)juce::jmap(i - 1, 0, scopeSize - 1, 0, width),
-                              juce::jmap(scopeData[i - 1], 0.0f, 1.0f, (float)height-10, 0.0f),
+                              juce::jmap(scopeData[i - 1], 0.0f, 1.0f, (float)height, 0.0f),
                       (float)juce::jmap(i,     0, scopeSize - 1, 0, width),
-                              juce::jmap(scopeData[i],     0.0f, 1.0f, (float)height-10, 0.0f) });
+                              juce::jmap(scopeData[i],     0.0f, 1.0f, (float)height, 0.0f) });
     }
 }
 

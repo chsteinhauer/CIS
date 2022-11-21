@@ -2,8 +2,14 @@
 #include "PreprocessExample.h"
 
 void PreprocessExample::prepare(const juce::dsp::ProcessSpec& spec) {
-    iir.state = juce::dsp::IIR::Coefficients<float>::makeLowPass(spec.sampleRate,440);
+    static const int fmin = 250;
+    static const int fmax = 4500;
 
+    float fcenter = fmin*pow(fmax/fmin,0.5); //static_cast<float>((fmax - fmin)) / 2;
+
+    float filterQ = sqrt(fmin * fmax) / (fmax - fmin);
+
+    iir.state = juce::dsp::IIR::Coefficients<float>::makeBandPass(spec.sampleRate, fcenter, filterQ);
     iir.prepare(spec);
 }
 

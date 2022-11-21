@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <JuceHeader.h>
@@ -8,6 +9,17 @@
 #include "ReconstructionExample.h"
 #include "MediaPlayerComponent.h"
 
+class OtherLookAndFeel : public juce::LookAndFeel_V4
+{
+public:
+    OtherLookAndFeel()
+    {
+        setColour(juce::Toolbar::backgroundColourId, juce::Colours::darkgreen);
+        setColour(juce::Slider::thumbColourId, juce::Colours::orange);
+        setColour(juce::Slider::trackColourId, findColour(juce::Slider::trackColourId).darker(0.1F));
+    }
+};
+
 //==============================================================================
 /*
     This component lives inside our window, and this is where you should put all
@@ -16,7 +28,6 @@
 
 class MainComponent  : public juce::AudioAppComponent
 {
-    
 
 public:
     //==============================================================================
@@ -33,23 +44,21 @@ public:
     void paint (juce::Graphics& g) override;
     void resized() override;
 
-    //==============================================================================
+    void GUISetup();
 
 private:
     //==============================================================================
     // Your private member variables go here...
 
+    OtherLookAndFeel otherLookAndFeel;
+    juce::dsp::Gain<float> gain;
+
     juce::AudioDeviceManager otherDeviceManager;
     std::unique_ptr<juce::AudioDeviceSelectorComponent> audioSettings;
     std::unique_ptr<SimulationEngine<PreprocessExample, AnalyseExample, ReconstructionExample>> engine;
 
-    SpectrumVisualizer IN;
-    SpectrumVisualizer OUT;
-
-    juce::ToggleButton mediaToggle;
-    MediaPlayerComponent mediaPlayer;
-
-    void mediaToggleButtonChanged();
+    SimulationEditor* editor;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };
+
