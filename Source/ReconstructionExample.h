@@ -17,7 +17,6 @@ public:
     void reset();
 
 private:
-
     struct Synthesis {
         Synthesis();
         ~Synthesis();
@@ -26,10 +25,11 @@ private:
         void process(const juce::dsp::ProcessContextReplacing<float>& context);
         void reset();
 
-        juce::dsp::Oscillator<float> osc;
         juce::Random random;
         juce::dsp::Gain<float> gain;
         double sampleRate;
+
+        juce::dsp::ProcessorDuplicator<juce::dsp::IIR::Filter<float>, juce::dsp::IIR::Coefficients<float>> iir;
     };
 
     ButterworthBandpass butterworth;

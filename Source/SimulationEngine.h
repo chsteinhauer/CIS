@@ -77,13 +77,13 @@ public:
                 outputBlock.getSingleChannelBlock(i).copyFrom(simulatedBlock);
             }
         }
-       /* else {
+        else {
 
             auto volume = State::GetInstance()->getParameter("volume")->getValue();
             auto audio = State::GetInstance()->getParameter("audio")->getValue();
 
-            outputBlock.multiplyBy(volume * !audio);
-        }*/
+            outputBlock.multiplyBy(volume * !audio * (State::GetDenormalizedValue("channelN") > 0 ? 1 : 0.3));
+        }
     }
 
     bool hasEditor() const override { return true; }

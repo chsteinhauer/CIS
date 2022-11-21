@@ -2,6 +2,20 @@
 #include "PlayerPanel.h"
 
 PlayerPanel::PlayerPanel() {
+    addAndMakeVisible(mediaPlayer);
+    addAndMakeVisible(mediaToggle);
+    mediaToggle.setButtonText("Use media as input");
+    mediaToggle.onClick = [this] { mediaToggleButtonChanged(); };
+    mediaPlayer.setEnabled(mediaToggle.getToggleState());
+
+    // Player panel
+    player.justifyContent = juce::FlexBox::JustifyContent::flexEnd;
+    player.alignContent = juce::FlexBox::AlignContent::center;
+    player.flexDirection = juce::FlexBox::Direction::column;
+
+    player.items.add(juce::FlexItem(mediaToggle).withMinWidth(150).withMinHeight(20).withMargin({7,0,7,0}));
+    player.items.add(juce::FlexItem(mediaPlayer).withMinWidth(300).withMinHeight(160));
+
     // Add input and output spectrum visualizer 
     addAndMakeVisible(IN);
     IN.setTitle("Input");
@@ -14,37 +28,15 @@ PlayerPanel::PlayerPanel() {
     outToggle.setClickingTogglesState(true);
     addAndMakeVisible(outToggle);
     
-    addAndMakeVisible(mediaPlayer);
-    addAndMakeVisible(mediaToggle);
-    mediaToggle.setButtonText("Use media as input");
-    mediaToggle.onClick = [this] { mediaToggleButtonChanged(); };
-    mediaPlayer.setEnabled(mediaToggle.getToggleState());
-
-    // Player panel
-    player.justifyContent = juce::FlexBox::JustifyContent::flexStart;
-    player.alignContent = juce::FlexBox::AlignContent::center;
-    player.flexDirection = juce::FlexBox::Direction::column;
-
-    player.items.add(juce::FlexItem(mediaToggle).withMinWidth(150).withMinHeight(20));
-    player.items.add(juce::FlexItem(mediaPlayer).withMinWidth(300).withMinHeight(160));
-
     panel.flexDirection = juce::FlexBox::Direction::row;
     panel.alignContent = juce::FlexBox::AlignContent::flexEnd;
-
-
-    // Media Player
-    panel.items.add(juce::FlexItem(IN).withMinWidth(300.0f).withMinHeight(200.0f).withMaxHeight(400).withFlex(1).withMargin(7));
-    panel.items.add(juce::FlexItem(OUT).withMinWidth(300.0f).withMinHeight(200.0f).withMaxHeight(400).withFlex(1).withMargin(7));
-    //panel.items.add(juce::FlexItem(OUT_CHANNELS).withMinWidth(300.0f).withMinHeight(200.0f).withMaxHeight(400).withFlex(1).withMargin(7));
-    panel.items.add(juce::FlexItem(player).withMinWidth(300).withMinHeight(200.0f).withMargin(7));      
-
-
 }
 
 PlayerPanel::~PlayerPanel() {}
 
 void PlayerPanel::paint(juce::Graphics& g) {
-
+    g.setColour(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId).brighter(0.1F));
+    g.fillRoundedRectangle(0, 0, getWidth(), getHeight(), 10.0f);
 }
 
 void PlayerPanel::resized()
@@ -55,34 +47,34 @@ void PlayerPanel::resized()
     OUT.stopTimer();
     OUT_CHANNELS.stopTimer();
 
-    panel.items.add(juce::FlexItem(IN).withMinWidth(300.0f).withMinHeight(200.0f).withMaxHeight(400).withFlex(1).withMargin(7));
-    juce::Rectangle<int> outBounds;
+    panel.items.add(juce::FlexItem(player).withMinWidth(300).withMinHeight(200.0f).withMargin({ 21, 14, 21, 21 }));
+    panel.items.add(juce::FlexItem(IN).withFlex(1).withMinWidth(300.0f).withMinHeight(200.0f).withMaxHeight(400).withMargin({ 21, 7, 21, 7 }));
 
-    IN.startTimerHz(30);
+    IN.startTimerHz(20);
     if (!outToggle.getToggleStateValue().getValue()) {
-        panel.items.add(juce::FlexItem(OUT).withMinWidth(300.0f).withMinHeight(200.0f).withMaxHeight(400).withFlex(1).withMargin(7));
+        panel.items.add(juce::FlexItem(OUT).withFlex(1).withMinWidth(300.0f).withMinHeight(200.0f).withMaxHeight(400).withMargin({ 21, 21, 21, 14 }));
 
         OUT_CHANNELS.setVisible(false);
         OUT.setVisible(true);
-        OUT.startTimerHz(30);
+        OUT.startTimerHz(20);
     }
-    else 
+    else
     {
-        panel.items.add(juce::FlexItem(OUT_CHANNELS).withMinWidth(300.0f).withMinHeight(200.0f).withMaxHeight(400).withFlex(1).withMargin(7));
+        panel.items.add(juce::FlexItem(OUT_CHANNELS).withFlex(1).withMinWidth(300.0f).withMinHeight(200.0f).withMaxHeight(400).withMargin({ 21, 21, 21, 14 }));
 
         OUT.setVisible(false);
         OUT_CHANNELS.setVisible(true);
-        OUT_CHANNELS.startTimerHz(30);
+        OUT_CHANNELS.startTimerHz(20);
     }
 
-    panel.items.add(juce::FlexItem(player).withMinWidth(300).withMinHeight(200.0f).withMargin(7));
 
     player.performLayout(getLocalBounds().toFloat());
     panel.performLayout(getLocalBounds().toFloat());
 
     auto p = getLocalBounds().getTopRight();
-    outToggle.setBounds(p.getX()-370,p.getY()+15,40,20);
+    outToggle.setBounds(p.getX()-110,p.getY()+30,80,20);
 }
+
 
 void PlayerPanel::mediaToggleButtonChanged()
 {

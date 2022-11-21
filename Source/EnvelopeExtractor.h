@@ -20,6 +20,6 @@ public:
 
 private:
 
-    //std::vector<std::unique_ptr<juce::dsp::IIR::Filter<float>>> filters;
-    juce::dsp::ProcessorDuplicator<juce::dsp::IIR::Filter<float>, juce::dsp::IIR::Coefficients<float>> iir;
+    std::vector<std::unique_ptr<juce::dsp::IIR::Filter<float>>> filters;
+    //juce::dsp::ProcessorDuplicator<juce::dsp::IIR::Filter<float>, juce::dsp::IIR::Coefficients<float>> iir;
 };

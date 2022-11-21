@@ -31,8 +31,6 @@ void ButterworthBandpass::remakeFilters(const juce::dsp::ProcessSpec& spec)
 		highFreq = gw->convertFrom0to1(((float)i / N));
 		tmp.at((size_t)i-1).prepare(lowFreq, highFreq, { spec.sampleRate, (juce::uint32)spec.maximumBlockSize, (juce::uint32)1 });
 
-		DBG("lowFreq: " << lowFreq << " highFreq: " << highFreq);
-
 		lowFreq = highFreq;
 
 		//double gain = 1.0;

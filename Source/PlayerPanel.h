@@ -11,16 +11,18 @@ public:
     PlayerPanel();
     ~PlayerPanel() override;
 
-    void mediaToggleButtonChanged();
 
     //==============================================================================
     void paint(juce::Graphics& g) override;
     void resized() override;
 
+    void mediaToggleButtonChanged();
+
+
 	juce::FlexBox panel;
     juce::FlexBox player;
 
-    juce::TextButton outToggle { "View" };
+    juce::TextButton outToggle { "Change View" };
     SpectrumVisualizer IN;
     SpectrumVisualizer OUT;
     ChannelSpectrumVisualizer OUT_CHANNELS;

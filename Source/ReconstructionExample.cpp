@@ -21,11 +21,17 @@ void ReconstructionExample::reset() {
 }
 
 
-ReconstructionExample::Synthesis::Synthesis() : osc([](float x) { return std::sin(x); }) {}
+ReconstructionExample::Synthesis::Synthesis() {}
 ReconstructionExample::Synthesis::~Synthesis() {}
 
 void ReconstructionExample::Synthesis::prepare(const juce::dsp::ProcessSpec& spec) {
 	sampleRate = spec.sampleRate;
+
+	iir.reset();
+	auto coeffs = juce::dsp::FilterDesign<float>::designIIRLowpassHighOrderButterworthMethod(200, spec.sampleRate, 2);
+
+	*iir.state = *coeffs[0];
+	iir.prepare(spec);
 }
 
 void ReconstructionExample::Synthesis::process(const juce::dsp::ProcessContextReplacing<float>& context) {
@@ -40,9 +46,9 @@ void ReconstructionExample::Synthesis::process(const juce::dsp::ProcessContextRe
 
 	float scale = std::exp(-State::GetDenormalizedValue("channelN")/2);
 
-	float sine_gain = 5 + 10 * scale;
-	float noise_gain = 5 + 200 * scale;
-	float def_gain = 100;
+	float sine_gain = 1 + 30 * scale;
+	float noise_gain = 2 + 200 * scale;
+	float def_gain = 200;
 
 	auto gw = State::GetInstance()->getParameter("Greenwood");
 
@@ -54,8 +60,6 @@ void ReconstructionExample::Synthesis::process(const juce::dsp::ProcessContextRe
 		hi = gw->convertFrom0to1(static_cast<float>(i) / N);
 
 		float fcenter = lo * pow((hi / lo), 0.5);
-		osc.setFrequency(fcenter);
-
 		auto cyclesPerSample = fcenter / sampleRate;
 		float delta = cyclesPerSample * 2.0 * juce::MathConstants<double>::pi;
 		float angle = 0;
@@ -88,8 +92,10 @@ void ReconstructionExample::Synthesis::process(const juce::dsp::ProcessContextRe
 
 		lo = hi;
 	}
+
+	//iir.process(context);
 }
 
 void ReconstructionExample::Synthesis::reset() {
-	osc.reset();
+	iir.reset();
 }

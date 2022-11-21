@@ -53,6 +53,7 @@ Select::Select(std::string id, std::string _label = "") : juce::ComboBox(id), at
     }
 
     addAndMakeVisible(label);
+    setSelectedId(6);
 }
 
 Select::~Select() {}

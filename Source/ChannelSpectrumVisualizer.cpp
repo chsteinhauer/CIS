@@ -7,7 +7,7 @@ juce::Colour State::colours[State::maxNumChannels];
 ChannelSpectrumVisualizer::ChannelSpectrumVisualizer() : forwardFFT(fftOrder), window(fftSize, juce::dsp::WindowingFunction<float>::hann)
 {
     setOpaque(true);
-    startTimerHz(30);
+    startTimerHz(20);
     setSize(400, 200);
 }
 
@@ -64,7 +64,7 @@ void ChannelSpectrumVisualizer::drawNextMultiFrameOfSpectrum(int channel)
         auto level = juce::jmap(juce::jlimit(mindB, maxdB, juce::Decibels::gainToDecibels(fftTable[channel][fftDataIndex])
             - juce::Decibels::gainToDecibels((float)fftSize)),
             mindB, maxdB, 0.0f, 1.0f);
-        multiScopeData[channel][i] = level;
+        multiScopeData[channel][i] = level*0.9;
     }
 }
 

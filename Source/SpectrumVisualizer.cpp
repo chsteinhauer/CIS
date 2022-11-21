@@ -5,7 +5,7 @@
 SpectrumVisualizer::SpectrumVisualizer() : forwardFFT(fftOrder), window(fftSize, juce::dsp::WindowingFunction<float>::hann)
 {
     setOpaque(true);
-    startTimerHz(30);
+    startTimerHz(20);
     setSize(400, 200);
 }
 
@@ -18,7 +18,7 @@ void SpectrumVisualizer::paint(juce::Graphics& g)
 {
     g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId).darker(0.95F));
 
-    g.setOpacity(1.0f);
+    g.setOpacity(0.9f);
     g.setColour(juce::Colours::white);
     drawFrame(g);
 }
@@ -51,7 +51,7 @@ void SpectrumVisualizer::drawNextFrameOfSpectrum()
         auto level = juce::jmap(juce::jlimit(mindB, maxdB, juce::Decibels::gainToDecibels(fftData[fftDataIndex])
             - juce::Decibels::gainToDecibels((float)fftSize)),
             mindB, maxdB, 0.0f, 1.0f);
-        scopeData[i] = level;
+        scopeData[i] = pow(level,2);
     }
 }
 

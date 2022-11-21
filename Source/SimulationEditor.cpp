@@ -18,18 +18,18 @@ SimulationEditor::SimulationEditor(juce::AudioProcessor& owner)
     addAndMakeVisible(playerPanel);
 
 
-    content.justifyContent = juce::FlexBox::JustifyContent::flexStart;
+    content.justifyContent = juce::FlexBox::JustifyContent::center;
     content.alignContent = juce::FlexBox::AlignContent::center;
     content.flexDirection = juce::FlexBox::Direction::column;
 
-    content.items.add(juce::FlexItem(playerPanel).withFlex(1).withMargin(20)); // withMinWidth(400.0f).withMinHeight(getHeight()).withMargin(20));
-    content.items.add(juce::FlexItem(controllerPanel).withMaxHeight(300).withFlex(1).withMargin(20));
+    content.items.add(juce::FlexItem(playerPanel).withFlex(1).withMaxHeight(350).withMargin({ 21, 21, 14, 21 })); // withMinWidth(400.0f).withMinHeight(getHeight()).withMargin(20));
+    content.items.add(juce::FlexItem(controllerPanel).withFlex(1).withMaxHeight(220).withMaxWidth(1600).withMargin({ 7, 21, 21, 21 }));
 
     panels.justifyContent = juce::FlexBox::JustifyContent::center;
     panels.alignContent = juce::FlexBox::AlignContent::center;
 
     panels.items.add(juce::FlexItem(*menu).withMinHeight(getHeight()).withMinWidth(39));
-    panels.items.add(juce::FlexItem(content).withFlex(1).withMaxHeight(800).withMaxWidth(1600));
+    panels.items.add(juce::FlexItem(content).withFlex(1));
     
 }
 

@@ -27,7 +27,7 @@ public:
     void pushNextSampleIntoFifoTable(int channel, float sample) noexcept;
 
 private:
-    const static int maxN = 10;//State::maxNumChannels,
+    const static int maxN = 15;//State::maxNumChannels,
 
     juce::dsp::FFT forwardFFT;
     juce::dsp::WindowingFunction<float> window;

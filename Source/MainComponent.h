@@ -51,6 +51,7 @@ private:
     // Your private member variables go here...
 
     OtherLookAndFeel otherLookAndFeel;
+    juce::dsp::Gain<float> gain;
 
     juce::AudioDeviceManager otherDeviceManager;
     std::unique_ptr<juce::AudioDeviceSelectorComponent> audioSettings;

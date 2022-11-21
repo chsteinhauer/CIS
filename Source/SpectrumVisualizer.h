@@ -6,7 +6,7 @@
 class SpectrumVisualizer  : public juce::Component, public juce::Timer {
     enum
     {
-        fftOrder = 12,
+        fftOrder = 11,
         fftSize = 1 << fftOrder,
         scopeSize = 512,
     };
