@@ -5,7 +5,7 @@ void PreprocessExample::prepare(const juce::dsp::ProcessSpec& spec) {
     static const int fmin = 250;
     static const int fmax = 4500;
 
-    float fcenter = static_cast<float>((fmax - fmin)) / 2;
+    float fcenter = fmin*pow(fmax/fmin,0.5); //static_cast<float>((fmax - fmin)) / 2;
 
     float filterQ = sqrt(fmin * fmax) / (fmax - fmin);
 
