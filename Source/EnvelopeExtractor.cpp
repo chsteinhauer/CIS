@@ -17,7 +17,7 @@ void EnvelopeExtractor::prepareHalfwaveRectification(const juce::dsp::ProcessSpe
         float freq = range->convertFrom0to1(static_cast<float>(i) / N);
         auto test = (freq / 5);
 
-        auto coeffs =  juce::dsp::FilterDesign<float>::designIIRLowpassHighOrderButterworthMethod(freq/5, spec.sampleRate, 2);
+        auto coeffs =  juce::dsp::FilterDesign<float>::designIIRLowpassHighOrderButterworthMethod(freq/10, spec.sampleRate, 2);
 
         filters.push_back(std::make_unique<juce::dsp::IIR::Filter<float>>(coeffs[0]));
     }

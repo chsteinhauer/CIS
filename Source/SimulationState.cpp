@@ -101,33 +101,42 @@ juce::NormalisableRange<float> State::getGreenwoodRange(float min, float max)
 
 float State::inverseGreenwood(float x) {
     //Constants for greenwood function applied to the human cochlear
-    /*const float A = 165.4f;
+    const float A = 165.4f;
     const float a = 2.1f;
-    const float K = 0.88f;*/
+    const float K = 0.88f;
 
+    const float min = 0.0f;
+    const float max = 1.0f;
+    const float newMin = 0.180318f;
+    const float newMax = 0.689763f;
+
+    x = map(x, min, max, newMin, newMax);
     //Adjusted constants for frequency range 250-4500Hz
-    const float A = 34.1f;
-    const float a = 2.1f;
-    const float K = -6.35f;
 
     return (log10((x / A) + K) / a);
 }
 
 float State::greenwood(float x)
 {
-    ////Constants for greenwood function applied to the human cochlear
-    //const float A = 165.4f;
-    //const float a = 2.1f;
-    //const float K = 0.88f;
-
-    //Adjusted constants for frequency range 250-4500Hz
-    const float A = 34.1f;
+    //Constants for greenwood function applied to the human cochlear
+    const float A = 165.4f;
     const float a = 2.1f;
-    const float K = -6.35f;
+    const float K = 0.88f;
+
+    const float min = 0.0f;
+    const float max = 1.0f;
+    const float newMin = 0.180318f;
+    const float newMax = 0.689763f;
+
+    x = map(x, min, max, newMin, newMax);
 
     if (x > 1 || x < 0)
     {
         return -1;
     }
     return A * (pow(10, (a * x)) - K);
+}
+
+float State::map(float x, float in_min, float in_max, float out_min, float out_max) {
+    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
