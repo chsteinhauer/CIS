@@ -151,16 +151,13 @@ private:
         samplesToOutputVisualizer(tmp.multiplyBy(volume * !audio), 0);
 
         // Instantiate simulatedBlock with channel 0
-        juce::dsp::AudioBlock<float>& simulatedBlock(
-            tmp.multiplyBy((1.0f / tempBlock->getNumChannels()))
-        );
+        juce::dsp::AudioBlock<float>& simulatedBlock(tmp);
 
         for (int i = 1; i < tempBlock->getNumChannels(); i++) {
             auto tmp = tempBlock->getSingleChannelBlock(i);
             samplesToOutputVisualizer(tmp.multiplyBy(volume * !audio),i);
 
             // multiply with the fraction of number of channels to not blow our ears off
-            tmp.multiplyBy((1.0f / tempBlock->getNumChannels()));
             simulatedBlock.add(tmp);
         }
 

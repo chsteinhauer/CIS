@@ -46,10 +46,6 @@ void ReconstructionExample::Synthesis::process(const juce::dsp::ProcessContextRe
 
 	float scale = std::exp(-State::GetDenormalizedValue("channelN")/2);
 
-	float sine_gain = 1 + 30 * scale;
-	float noise_gain = 2 + 200 * scale;
-	float def_gain = 200;
-
 	auto gw = State::GetInstance()->getParameter("Greenwood");
 
 	float lo = gw->convertFrom0to1(0);
@@ -75,15 +71,15 @@ void ReconstructionExample::Synthesis::process(const juce::dsp::ProcessContextRe
 			float sine = 0, noise = 0;
 
 			if (sineEnabled) {
-				sine = sin(angle) * sine_gain;
+				sine = sin(angle);
 				angle += delta;
 			}
 
 			if (noiseEnabled)
-				noise = random.nextFloat() * noise_gain;
+				noise = random.nextFloat();
 
 			if (data != nullptr) {
-				data[j] = (data[j] * sine + data[j] * noise) * def_gain;
+				data[j] = (data[j] * sine + data[j] * noise);
 			}
 		}
 

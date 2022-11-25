@@ -30,7 +30,7 @@ private:
         ButterworthSixthOrder() = default;
         ~ButterworthSixthOrder();
         
-        void prepare(float lowFreq, float highFreq, const juce::dsp::ProcessSpec& spec);
+        void prepare(float lowFreq, float highFreq, const juce::dsp::ProcessSpec& spec, int order);
         void process(juce::dsp::ProcessContextReplacing<float> context);
         void reset();
 
@@ -44,6 +44,9 @@ private:
     std::vector<ButterworthSixthOrder> bandpasses;
 
     float greenwood(float x);
+
+    bool randomize;
+    juce::Random random;
 
     //std::unique_ptr<FilterVector> bandpasses;
 };

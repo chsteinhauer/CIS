@@ -24,12 +24,20 @@ void ButterworthBandpass::remakeFilters(const juce::dsp::ProcessSpec& spec)
 
 	auto gw = State::GetInstance()->getParameter("Greenwood");
 
+	bool randomizeOrder = State::GetInstance()->getParameterAsValue("RandomOrder").getValue();
+
 	float lowFreq = gw->convertFrom0to1(0); 
+	int order;
 	float highFreq;
 	for (int i = 1; i <= N; i++)
 	{
+		if (randomizeOrder)
+			order = 5 + random.nextFloat() * 2; // Random value between 5 & 7
+		else
+			order = 6;
+
 		highFreq = gw->convertFrom0to1(((float)i / N));
-		tmp.at((size_t)i-1).prepare(lowFreq, highFreq, { spec.sampleRate, (juce::uint32)spec.maximumBlockSize, (juce::uint32)1 });
+		tmp.at((size_t)i-1).prepare(lowFreq, highFreq, { spec.sampleRate, (juce::uint32)spec.maximumBlockSize, (juce::uint32)1 }, order);
 
 		lowFreq = highFreq;
 
@@ -176,8 +184,8 @@ ButterworthBandpass::ButterworthSixthOrder::~ButterworthSixthOrder() {};
 //ButterworthBandpass::ButterworthSixthOrder::ButterworthSixthOrder(const ButterworthSixthOrder&) {
 //}
 
-void ButterworthBandpass::ButterworthSixthOrder::prepare(float lowFreq, float highFreq,const juce::dsp::ProcessSpec& spec) {
-	auto lowpassCoeffs = juce::dsp::FilterDesign<float>::designIIRLowpassHighOrderButterworthMethod(lowFreq, spec.sampleRate, 6);
+void ButterworthBandpass::ButterworthSixthOrder::prepare(float lowFreq, float highFreq,const juce::dsp::ProcessSpec& spec, int order) {
+	auto lowpassCoeffs = juce::dsp::FilterDesign<float>::designIIRLowpassHighOrderButterworthMethod(highFreq, spec.sampleRate, order);
 
 	lowpass.setBypassed<0>(true);
 	lowpass.setBypassed<1>(true);
@@ -193,7 +201,7 @@ void ButterworthBandpass::ButterworthSixthOrder::prepare(float lowFreq, float hi
 
 	lowpass.prepare(spec);
 
-	auto highpassCoeffs = juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(highFreq, spec.sampleRate, 6);
+	auto highpassCoeffs = juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(lowFreq, spec.sampleRate, order);
 
 	highpass.setBypassed<0>(true);
 	highpass.setBypassed<1>(true);
