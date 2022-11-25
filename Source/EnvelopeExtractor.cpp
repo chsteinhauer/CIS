@@ -9,7 +9,7 @@ EnvelopeExtractor::EnvelopeExtractor()
 }
 
 void EnvelopeExtractor::prepareHalfwaveRectification(const juce::dsp::ProcessSpec& spec) {
-    filters.clear();
+   /* filters.clear();
     auto range = State::GetInstance()->getParameter("Greenwood");
 
     int N = spec.numChannels;
@@ -20,13 +20,13 @@ void EnvelopeExtractor::prepareHalfwaveRectification(const juce::dsp::ProcessSpe
         auto coeffs =  juce::dsp::FilterDesign<float>::designIIRLowpassHighOrderButterworthMethod(freq/10, spec.sampleRate, 2);
 
         filters.push_back(std::make_unique<juce::dsp::IIR::Filter<float>>(coeffs[0]));
-    }
-    //iir.reset();
-    //auto coeffs = juce::dsp::FilterDesign<float>::designIIRLowpassHighOrderButterworthMethod(100, spec.sampleRate, 2);
+    }*/
+    iir.reset();
+    auto coeffs = juce::dsp::FilterDesign<float>::designIIRLowpassHighOrderButterworthMethod(200, spec.sampleRate, 2);
 
-    //*iir.state = *coeffs[0];
+    *iir.state = *coeffs[0];
 
-    //iir.prepare(spec);
+    iir.prepare(spec);
 }
 
 void EnvelopeExtractor::halfwaveRectification(const juce::dsp::ProcessContextReplacing<float>& context)
@@ -48,13 +48,13 @@ void EnvelopeExtractor::halfwaveRectification(const juce::dsp::ProcessContextRep
             }
         }
 
-        filters.at(i)->process(juce::dsp::ProcessContextReplacing<float>(block.getSingleChannelBlock(i)));
+        //filters.at(i)->process(juce::dsp::ProcessContextReplacing<float>(block.getSingleChannelBlock(i)));
     }
 
-    //iir.process(context);
+    iir.process(context);
 }
 
 void EnvelopeExtractor::hilbertTransform(juce::dsp::AudioBlock<float> block)
 {
-
+    iir.reset();
 }

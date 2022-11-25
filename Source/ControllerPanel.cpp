@@ -5,20 +5,17 @@ ControllerPanel::ControllerPanel() :
     sine("sine", "Sine processor"), 
     noise("noise","Noise processor"),
     channels("channelN","Select number of channels"),
-    fmin("fmin","Low frequency"),
-    fmax("fmax","High frequency")
+    fslider("Frequency range")
 {
     addAndMakeVisible(sine);
     addAndMakeVisible(noise);
     addAndMakeVisible(channels);
-    addAndMakeVisible(fmin);
-    addAndMakeVisible(fmax);
+    addAndMakeVisible(fslider);
 
     freqSliders.alignItems = juce::FlexBox::AlignItems::flexStart;
     freqSliders.justifyContent = juce::FlexBox::JustifyContent::center;
 
-    freqSliders.items.add(flexItem(&fmin).withMargin(7));
-    freqSliders.items.add(flexItem(&fmax).withMargin(7));
+    freqSliders.items.add(flexItem(&fslider).withMargin(7));
 
     checkBoxes.alignItems = juce::FlexBox::AlignItems::flexStart;
     checkBoxes.flexDirection = juce::FlexBox::Direction::column;

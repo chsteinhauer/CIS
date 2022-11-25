@@ -1,11 +1,12 @@
 
 #include "PreprocessExample.h"
+#include "SimulationState.h"
 
 void PreprocessExample::prepare(const juce::dsp::ProcessSpec& spec) {
-    static const int fmin = 250;
-    static const int fmax = 4500;
+    static const int fmin = State::GetDenormalizedValue("fmin");
+    static const int fmax = State::GetDenormalizedValue("fmax");
 
-    float fcenter = fmin*pow(fmax/fmin,0.5); //static_cast<float>((fmax - fmin)) / 2;
+    float fcenter = (static_cast<float>(fmax) / fmin) > 1.1 ? fmin * pow(static_cast<float>(fmax) / fmin, 0.5) : static_cast<float>((fmax - fmin)) / 2;
 
     float filterQ = sqrt(fmin * fmax) / (fmax - fmin);
 

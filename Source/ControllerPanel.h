@@ -27,7 +27,7 @@ public:
     CheckBox sine;
     CheckBox noise;
 
-    FrequencySlider fmin;
-    FrequencySlider fmax;
+    //FrequencySlider fmin;
+    FrequencySlider fslider;
     std::vector<std::unique_ptr<VolumeSlider>> sliders;
 };

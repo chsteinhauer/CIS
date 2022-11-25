@@ -99,15 +99,13 @@ void VolumeSlider::mouseUp(const juce::MouseEvent& evt) {
 
 
 /* FrequencySlider */
-FrequencySlider::FrequencySlider(std::string id, std::string _label) : attachment(*State::GetInstance(), id, *this) {
-    auto par = State::GetInstance()->getParameterRange(id);
+FrequencySlider::FrequencySlider(std::string _label) { //: attachment(*State::GetInstance(), id, *this) {
+    setSliderStyle(juce::Slider::TwoValueHorizontal);
+    setRange(20, 20000, 0.1f);
 
     // default slider config
-    setRange(par.start, par.end, par.interval);
-    setSize(100, 120);
-    setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
-    setTextBoxStyle(juce::Slider::TextBoxBelow,false,60,25);
-    setTextValueSuffix(" Hz");
+    setSize(200, 75);
+    setTextBoxStyle(juce::Slider::TextBoxBelow,true,200,25);
 
     if (!_label.empty()) {
         label.setText(_label, juce::dontSendNotification);
@@ -115,10 +113,38 @@ FrequencySlider::FrequencySlider(std::string id, std::string _label) : attachmen
     }
 
     addAndMakeVisible(label);
+
+    setMinAndMaxValues(250, 4500);
+
+    State::GetInstance()->addParameterListener("fmin", this);
+    State::GetInstance()->addParameterListener("fmax", this);
+
+    onValueChange = [this] { updateValueTree(); };
+}
+
+void FrequencySlider::parameterChanged(const juce::String& parameterID, float newValue) {
+    /*if (parameterID == "fmin") {
+        setMinValue(newValue);
+    } else if (parameterID == "fmax") {
+        setMaxValue(newValue);
+    }*/
+}
+
+void FrequencySlider::updateValueTree() {
+    auto fmin = State::GetInstance()->getParameter("fmin");
+    auto minValue = fmin->convertTo0to1(getMinValue());
+    fmin->setValueNotifyingHost(minValue);
+
+    auto fmax = State::GetInstance()->getParameter("fmax");
+    auto maxValue = fmax->convertTo0to1(getMaxValue());
+    fmax->setValueNotifyingHost(maxValue);
+
+    updateText();
 }
 
 juce::String FrequencySlider::getTextFromValue(double value) {
-    return juce::String(static_cast<int>(value)) + " Hz";
+
+    return juce::String(getMinValue()) + " Hz - " + juce::String(getMaxValue()) + " Hz";
 }
 
 FrequencySlider::~FrequencySlider() {}
