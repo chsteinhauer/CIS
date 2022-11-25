@@ -55,6 +55,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout State::createParameters() {
     layout.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID{ "noise",   1 }, "Noise", true));
 
     // ranges
+    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{ "fmin",    1 }, "Low frequency",
+        juce::NormalisableRange<float>(20, 20000), 250));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{ "fmax",    1 }, "Max frequency",
+        juce::NormalisableRange<float>(20, 20000), 4500));
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{ "volume",    1 }, "Volume",
         juce::NormalisableRange<float>(0.0f, 1.0f), 1.0f));
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{ "channelN",  1 }, "Number of Channels",
@@ -92,28 +96,19 @@ juce::StringArray State::GetAllValueStrings(std::string id) {
 
 juce::NormalisableRange<float> State::getGreenwoodRange(float min, float max) 
 {
-
     return juce::NormalisableRange<float> (min, max, 
         [=](float min, float, float v) { return greenwood(v); },
         [=](float min, float, float v) { return inverseGreenwood(v); }
     );
 }
 
-float State::inverseGreenwood(float x) {
+float State::inverseGreenwood(float f) {
     //Constants for greenwood function applied to the human cochlear
     const float A = 165.4f;
     const float a = 2.1f;
     const float K = 0.88f;
 
-    const float min = 0.0f;
-    const float max = 1.0f;
-    const float newMin = 0.180318f;
-    const float newMax = 0.689763f;
-
-    x = map(x, min, max, newMin, newMax);
-    //Adjusted constants for frequency range 250-4500Hz
-
-    return (log10((x / A) + K) / a);
+    return (log10((f / A) + K) / a);
 }
 
 float State::greenwood(float x)
@@ -123,12 +118,16 @@ float State::greenwood(float x)
     const float a = 2.1f;
     const float K = 0.88f;
 
-    const float min = 0.0f;
-    const float max = 1.0f;
-    const float newMin = 0.180318f;
-    const float newMax = 0.689763f;
+    if (pinstance_ != nullptr) {
+        const float min = 0.0f;
+        const float max = 1.0f;
+        auto newMin = State::GetInstance()->getParameter("fmin");
+        auto newMax = State::GetInstance()->getParameter("fmax");
 
-    x = map(x, min, max, newMin, newMax);
+        if (newMin != nullptr && newMax != nullptr) {
+            x = map(x, min, max, newMin->getValue(), newMax->getValue());
+        }
+    }
 
     if (x > 1 || x < 0)
     {

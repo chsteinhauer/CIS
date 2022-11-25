@@ -98,6 +98,42 @@ void VolumeSlider::mouseUp(const juce::MouseEvent& evt) {
 }
 
 
+/* FrequencySlider */
+FrequencySlider::FrequencySlider(std::string id, std::string _label) : attachment(*State::GetInstance(), id, *this) {
+    auto par = State::GetInstance()->getParameterRange(id);
+
+    // default slider config
+    setRange(par.start, par.end, par.interval);
+    setSize(100, 120);
+    setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+    setTextBoxStyle(juce::Slider::TextBoxBelow,false,60,25);
+    setTextValueSuffix(" Hz");
+
+    if (!_label.empty()) {
+        label.setText(_label, juce::dontSendNotification);
+        label.attachToComponent(this, false);
+    }
+
+    addAndMakeVisible(label);
+}
+
+juce::String FrequencySlider::getTextFromValue(double value) {
+    return juce::String(static_cast<int>(value)) + " Hz";
+}
+
+FrequencySlider::~FrequencySlider() {}
+
+void FrequencySlider::mouseDown(const juce::MouseEvent& evt) {
+    setMouseCursor(juce::MouseCursor::DraggingHandCursor);
+    juce::Slider::mouseDown(evt);
+}
+
+void FrequencySlider::mouseUp(const juce::MouseEvent& evt) {
+    setMouseCursor(juce::MouseCursor::NormalCursor);
+    juce::Slider::mouseUp(evt);
+}
+
+
 /* AudioToggleButton */
 
 AudioToggleButton::AudioToggleButton() : attachment(*State::GetInstance(), "audio", *this) {

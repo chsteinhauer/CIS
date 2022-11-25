@@ -4,21 +4,29 @@
 ControllerPanel::ControllerPanel() : 
     sine("sine", "Sine processor"), 
     noise("noise","Noise processor"),
-    channels("channelN","Select number of channels")
+    channels("channelN","Select number of channels"),
+    fmin("fmin","Low frequency"),
+    fmax("fmax","High frequency")
 {
     addAndMakeVisible(sine);
     addAndMakeVisible(noise);
     addAndMakeVisible(channels);
-    addAndMakeVisible(todo);
+    addAndMakeVisible(fmin);
+    addAndMakeVisible(fmax);
+
+    freqSliders.alignItems = juce::FlexBox::AlignItems::flexStart;
+    freqSliders.justifyContent = juce::FlexBox::JustifyContent::center;
+
+    freqSliders.items.add(flexItem(&fmin).withMargin(7));
+    freqSliders.items.add(flexItem(&fmax).withMargin(7));
 
     checkBoxes.alignItems = juce::FlexBox::AlignItems::flexStart;
     checkBoxes.flexDirection = juce::FlexBox::Direction::column;
     checkBoxes.justifyContent = juce::FlexBox::JustifyContent::center;
 
-    checkBoxes.items.add(flexItem(&channels).withMargin({24,7,0,7}));
+    checkBoxes.items.add(flexItem(&channels).withMargin({18,7,0,7}));
     checkBoxes.items.add(flexItem(&sine));
     checkBoxes.items.add(flexItem(&noise));
-    checkBoxes.items.add(flexItem(&todo));
 
     channelControllers.alignItems = juce::FlexBox::AlignItems::center;
     channelControllers.flexDirection = juce::FlexBox::Direction::row;
@@ -27,7 +35,8 @@ ControllerPanel::ControllerPanel() :
     panel.alignItems = juce::FlexBox::AlignItems::center;
     panel.justifyContent = juce::FlexBox::JustifyContent::spaceBetween;
 
-    panel.items.add(juce::FlexItem(checkBoxes).withMinHeight(200).withMinWidth(300).withMargin(14));
+    panel.items.add(juce::FlexItem(checkBoxes).withMinHeight(200).withMinWidth(200).withMargin(14));
+    panel.items.add(juce::FlexItem(freqSliders).withMinHeight(100).withMinWidth(200).withMargin(14));
     panel.items.add(juce::FlexItem(channelControllers).withFlex(1).withMaxHeight(200).withMargin(14));
 
     channels.onChange = [this] { resized(); };
@@ -58,13 +67,13 @@ void ControllerPanel::paint(juce::Graphics& g) {
 }
 
 void ControllerPanel::resized() {
-
     int N = channels.getSelectedId();
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < State::maxNumChannels; i++) {
         sliders.at(i)->setVisible(i < N-1);
         sliders.at(i)->label.setVisible(i < N-1);
     }
 
+    freqSliders.performLayout(getLocalBounds().toFloat());
     channelControllers.performLayout(getLocalBounds().toFloat());
     checkBoxes.performLayout(getLocalBounds().toFloat());
 
