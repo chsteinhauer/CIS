@@ -25,7 +25,7 @@ ReconstructionExample::Synthesis::Synthesis() {}
 ReconstructionExample::Synthesis::~Synthesis() {}
 
 void ReconstructionExample::Synthesis::prepare(const juce::dsp::ProcessSpec& spec) {
-	sampleRate = spec.sampleRate;
+	sine.prepare(spec);
 }
 
 void ReconstructionExample::Synthesis::process(const juce::dsp::ProcessContextReplacing<float>& context) {
@@ -36,50 +36,36 @@ void ReconstructionExample::Synthesis::process(const juce::dsp::ProcessContextRe
 	if (!sineEnabled && !noiseEnabled) return;
 
 	Block block(context.getOutputBlock());
-	int N = block.getNumChannels();
 
-	auto gw = State::GetInstance()->getParameter("Greenwood");
-
-	float lo = gw->convertFrom0to1(0);
-	float hi = 0;
-	for (int i = 1; i <= N; i++)
+	for (int channel = 0; channel < block.getNumChannels(); channel++)
 	{
-		int channel = i - 1;
-		hi = gw->convertFrom0to1(static_cast<float>(i) / N);
-
-		// setup sinewave
-		float fcenter = (static_cast<float>(hi) / lo) > 1.1 ? lo * pow(static_cast<float>(hi) / lo, 0.5) : static_cast<float>((hi - lo)) / 2;
-		auto cyclesPerSample = fcenter / sampleRate;
-		float delta = cyclesPerSample * 2.0 * juce::MathConstants<double>::pi;
-		float angle = 0;
-
 		float* data = block.getChannelPointer(channel);
 
-		for (int j = 0; j < block.getNumSamples(); j++)
+		for (int i = 0; i < block.getNumSamples(); i++)
 		{
-			float sine = 0, noise = 0;
+			// carriers
+			float csine = 0, cnoise = 0;
 
 			if (sineEnabled) {
-				sine = sin(angle);
-				angle += delta;
+				csine = sine.next(channel);
 			}
 
 			if (noiseEnabled)
-				noise = random.nextFloat();
+				cnoise = noise.next();
 
 			if (data != nullptr) {
-				data[j] = (data[j] * sine + data[j] * noise);
+				data[i] = data[i] * csine + data[i] * cnoise;
 			}
 		}
 
-		auto par = State::GetInstance()->getParameter("channel" + std::to_string(i));
+		auto par = State::GetInstance()->getParameter("channel" + std::to_string(channel+1));
 		auto value = par->getValue();
 		gain.setGainLinear(value);
 
 		gain.process(juce::dsp::ProcessContextReplacing<float>(block.getSingleChannelBlock(channel)));
-
-		lo = hi;
 	}
 }
 
-void ReconstructionExample::Synthesis::reset() { }
+void ReconstructionExample::Synthesis::reset() { 
+	sine.reset();
+}

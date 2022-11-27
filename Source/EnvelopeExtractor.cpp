@@ -22,7 +22,7 @@ void EnvelopeExtractor::prepareHalfwaveRectification(const juce::dsp::ProcessSpe
         filters.push_back(std::make_unique<juce::dsp::IIR::Filter<float>>(coeffs[0]));
     }*/
     iir.reset();
-    auto coeffs = juce::dsp::FilterDesign<float>::designIIRLowpassHighOrderButterworthMethod(200, spec.sampleRate, 2);
+    auto coeffs = juce::dsp::FilterDesign<float>::designIIRLowpassHighOrderButterworthMethod(20, spec.sampleRate, 2);
 
     *iir.state = *coeffs[0];
 

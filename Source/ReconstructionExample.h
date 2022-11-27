@@ -4,6 +4,7 @@
 #include <JuceHeader.h>
 #include "SimulationState.h"
 #include "ButterworthBandpass.h"
+#include "Carrier.h"
 
 using Block = juce::dsp::AudioBlock<float>;
 
@@ -25,11 +26,9 @@ private:
         void process(const juce::dsp::ProcessContextReplacing<float>& context);
         void reset();
 
-        juce::Random random;
+        Sine sine;
+        Noise noise;
         juce::dsp::Gain<float> gain;
-        double sampleRate;
-
-        juce::dsp::ProcessorDuplicator<juce::dsp::IIR::Filter<float>, juce::dsp::IIR::Coefficients<float>> iir;
     };
 
     ButterworthBandpass butterworth;
