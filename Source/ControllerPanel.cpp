@@ -4,12 +4,15 @@
 ControllerPanel::ControllerPanel() : 
     sine("sine", "Sine processor"), 
     noise("noise","Noise processor"),
-    channels("channelN","Select number of channels")
+    channels("channelN","Select number of channels"),
+    randomOrder("randomOrder", "randomize bandpass order")
 {
     addAndMakeVisible(sine);
     addAndMakeVisible(noise);
     addAndMakeVisible(channels);
     addAndMakeVisible(todo);
+    addAndMakeVisible(randomOrder);
+
 
     checkBoxes.alignItems = juce::FlexBox::AlignItems::flexStart;
     checkBoxes.flexDirection = juce::FlexBox::Direction::column;
@@ -18,6 +21,7 @@ ControllerPanel::ControllerPanel() :
     checkBoxes.items.add(flexItem(&channels).withMargin({24,7,0,7}));
     checkBoxes.items.add(flexItem(&sine));
     checkBoxes.items.add(flexItem(&noise));
+    checkBoxes.items.add(flexItem(&randomOrder));
     checkBoxes.items.add(flexItem(&todo));
 
     channelControllers.alignItems = juce::FlexBox::AlignItems::center;

@@ -24,7 +24,7 @@ void ButterworthBandpass::remakeFilters(const juce::dsp::ProcessSpec& spec)
 
 	auto gw = State::GetInstance()->getParameter("Greenwood");
 
-	bool randomizeOrder = State::GetInstance()->getParameterAsValue("RandomOrder").getValue();
+	bool randomizeOrder = State::GetInstance()->getParameterAsValue("randomOrder").getValue();
 
 	float lowFreq = gw->convertFrom0to1(0); 
 	int order;
@@ -32,7 +32,7 @@ void ButterworthBandpass::remakeFilters(const juce::dsp::ProcessSpec& spec)
 	for (int i = 1; i <= N; i++)
 	{
 		if (randomizeOrder)
-			order = 5 + random.nextFloat() * 2; // Random value between 5 & 7
+			order = 5 + random.nextFloat() * 3; // Random value between 5 & 7
 		else
 			order = 6;
 
@@ -86,6 +86,10 @@ void ButterworthBandpass::remakeFilters(const juce::dsp::ProcessSpec& spec)
 		//highPassArray.push_back(highpass);
 
 	}
+
+	juce::OwnedArray<juce::OwnedArray<juce::dsp::IIR::Coefficients<float>>> myobj;
+	
+	myobj.add(nullptr);
 
 	bandpasses.swap(tmp);
 
@@ -187,6 +191,8 @@ ButterworthBandpass::ButterworthSixthOrder::~ButterworthSixthOrder() {};
 void ButterworthBandpass::ButterworthSixthOrder::prepare(float lowFreq, float highFreq,const juce::dsp::ProcessSpec& spec, int order) {
 	auto lowpassCoeffs = juce::dsp::FilterDesign<float>::designIIRLowpassHighOrderButterworthMethod(highFreq, spec.sampleRate, order);
 
+	auto size = lowpassCoeffs.size();
+	
 	lowpass.setBypassed<0>(true);
 	lowpass.setBypassed<1>(true);
 	lowpass.setBypassed<2>(true);

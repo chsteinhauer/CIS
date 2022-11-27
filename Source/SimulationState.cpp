@@ -53,7 +53,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout State::createParameters() {
     layout.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID{ "audio",   1 }, "Audio", false));
     layout.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID{ "sine",    1 }, "Sine", true));
     layout.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID{ "noise",   1 }, "Noise", true));
-
+    layout.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID{ "randomOrder", 1 }, "RandomOrder", false));
     // ranges
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{ "volume",    1 }, "Volume",
         juce::NormalisableRange<float>(0.0f, 1.0f), 1.0f));
@@ -99,21 +99,13 @@ juce::NormalisableRange<float> State::getGreenwoodRange(float min, float max)
     );
 }
 
-float State::inverseGreenwood(float x) {
+float State::inverseGreenwood(float f) {
     //Constants for greenwood function applied to the human cochlear
     const float A = 165.4f;
     const float a = 2.1f;
     const float K = 0.88f;
 
-    const float min = 0.0f;
-    const float max = 1.0f;
-    const float newMin = 0.180318f;
-    const float newMax = 0.689763f;
-
-    x = map(x, min, max, newMin, newMax);
-    //Adjusted constants for frequency range 250-4500Hz
-
-    return (log10((x / A) + K) / a);
+    return (log10((f / A) + K) / a);
 }
 
 float State::greenwood(float x)

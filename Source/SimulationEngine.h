@@ -18,6 +18,7 @@ public:
         State::Initialize(*this);
 
         State::GetInstance()->addParameterListener("channelN",this);
+        State::GetInstance()->addParameterListener("randomOrder", this);
     }
     ~SimulationEngine() {}
 
@@ -28,6 +29,11 @@ public:
             simulation.reset();
             simulation.prepare({ sampleRate, (juce::uint32)blockSize, (juce::uint32)newValue });
             tempBlock.reset(new juce::dsp::AudioBlock<float>(tempBlockMemory, newValue, blockSize));
+        }
+        else if (parameterID == "randomOrder")
+        {
+            simulation.reset();
+            simulation.prepare({ sampleRate, (juce::uint32)blockSize, (juce::uint32)State::GetDenormalizedValue("channelN") });
         }
     }
 

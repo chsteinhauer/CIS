@@ -26,6 +26,7 @@ public:
     Select channels;
     CheckBox sine;
     CheckBox noise;
+    CheckBox randomOrder;
     juce::ComboBox todo;
     std::vector<std::unique_ptr<VolumeSlider>> sliders;
 };
