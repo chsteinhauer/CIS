@@ -15,10 +15,10 @@ void Sine::prepare(const juce::dsp::ProcessSpec& spec) {
 
     oscillators.clear(); 
 
-    for (auto i = 0; i < OSCILLATOR_COUNT; ++i)  
+    for (auto i = 0; i < N; ++i)  
     {
         hi = gw->convertFrom0to1(static_cast<float>(i + 1) / N);
-        float fcenter = (static_cast<float>(hi) / lo) > 1.1 ? lo * pow(static_cast<float>(hi) / lo, 0.5) : static_cast<float>((hi - lo)) / 2;
+        float fcenter = lo * pow(static_cast<float>(hi) / lo, 0.5);
 
         oscillators.emplace_back(sineWaveTable, spec.sampleRate); 
         oscillators.at(i).setFrequency(fcenter);
@@ -90,9 +90,39 @@ PSHC::PSHC() { }
 PSHC::~PSHC() { }
 
 void PSHC::prepare(const juce::dsp::ProcessSpec& spec) {
+    std::vector<int> tmp(7);
+    std::iota(std::begin(tmp), std::end(tmp), 0);
+
+    r.clear();
+    r.swap(tmp);
+
+    tmp.clear();
+
+    std::shuffle(std::begin(r), std::end(r), gen);
 }
 
 void PSHC::process(const juce::dsp::ProcessContextReplacing<float>& context) {
+    int k = 10;
+    
+}
+
+float PSHC::genHarmonic(int k) {
+    auto& r_ = r;
+
+    float M = State::GetDenormalizedValue("fmin");
+    float N = State::GetDenormalizedValue("fmax");
+
+    float sine = 0.f;
+
+   /* for (int i = M; i < N; i++) {
+        auto j = (i % k) + 1;
+        auto p = juce::MathConstants<float>::twoPi * ((i / pow(k, 2)) * r_.back());
+        sine += std::sinf();
+
+        r_.pop_back();
+    }*/
+
+    return sine;
 }
 
 void PSHC::reset() {

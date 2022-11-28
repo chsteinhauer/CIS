@@ -6,7 +6,7 @@ void PreprocessExample::prepare(const juce::dsp::ProcessSpec& spec) {
     static const int fmin = State::GetDenormalizedValue("fmin");
     static const int fmax = State::GetDenormalizedValue("fmax");
 
-    float fcenter = (static_cast<float>(fmax) / fmin) > 1.1 ? fmin * pow(static_cast<float>(fmax) / fmin, 0.5) : static_cast<float>((fmax - fmin)) / 2;
+    float fcenter = fmin * pow(static_cast<float>(fmax) / fmin, 0.5);
 
     float filterQ = sqrt(fmin * fmax) / (fmax - fmin);
 

@@ -3,6 +3,7 @@
 #pragma once
 #include <JuceHeader.h>
 #include "SimulationState.h"
+#include <random>
 
 
 class Sine {
@@ -17,7 +18,7 @@ public:
 
 private:
 
-    // WavetableOscillator is copy & pasted from https://thewolfsound.com/sound-synthesis/wavetable-synth-plugin-in-juce/
+    // WavetableOscillator is generously copy & pasted from https://thewolfsound.com/sound-synthesis/wavetable-synth-plugin-in-juce/
     class WavetableOscillator
     {
     public:
@@ -64,4 +65,11 @@ public:
     void prepare(const juce::dsp::ProcessSpec& spec);
     void process(const juce::dsp::ProcessContextReplacing<float>& context);
     void reset();
+    float genHarmonic(int k);
+
+    std::default_random_engine gen{};
+    std::vector<int> r;
+    std::uniform_int_distribution<int> u{ 0,1 };
+
+    const float f0 = 0.3f;
 };
