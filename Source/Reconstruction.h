@@ -8,10 +8,10 @@
 
 using Block = juce::dsp::AudioBlock<float>;
 
-class ReconstructionExample {
+class Reconstruction {
 public:
-    ReconstructionExample();
-    ~ReconstructionExample();
+    Reconstruction();
+    ~Reconstruction();
 
     void prepare(const juce::dsp::ProcessSpec& spec);
     void process(const juce::dsp::ProcessContextReplacing<float>& context);

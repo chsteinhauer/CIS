@@ -12,9 +12,6 @@
 
 #include <JuceHeader.h>
 #include "MainComponent.h"
-#include "AnalyseExample.h"
-#include "ReconstructionExample.h"
-#include "PreprocessExample.h"
 
 
 
