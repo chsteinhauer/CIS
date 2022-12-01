@@ -1,34 +1,34 @@
 
-#include "ReconstructionExample.h"
+#include "Reconstruction.h"
 
 
-ReconstructionExample::ReconstructionExample() { }
-ReconstructionExample::~ReconstructionExample() { }
+Reconstruction::Reconstruction() { }
+Reconstruction::~Reconstruction() { }
 
-void ReconstructionExample::prepare(const juce::dsp::ProcessSpec& spec) {
+void Reconstruction::prepare(const juce::dsp::ProcessSpec& spec) {
 	synth.prepare(spec);
 	butterworth.remakeFilters(spec);
 }
 
-void ReconstructionExample::process(const juce::dsp::ProcessContextReplacing<float>& context) {
+void Reconstruction::process(const juce::dsp::ProcessContextReplacing<float>& context) {
 	synth.process(context);
 	butterworth.process(context.getOutputBlock());
 }
 
-void ReconstructionExample::reset() {
+void Reconstruction::reset() {
 	synth.reset();
 	butterworth.clearFilters();
 }
 
 
-ReconstructionExample::Synthesis::Synthesis() {}
-ReconstructionExample::Synthesis::~Synthesis() {}
+Reconstruction::Synthesis::Synthesis() {}
+Reconstruction::Synthesis::~Synthesis() {}
 
-void ReconstructionExample::Synthesis::prepare(const juce::dsp::ProcessSpec& spec) {
+void Reconstruction::Synthesis::prepare(const juce::dsp::ProcessSpec& spec) {
 	sampleRate = spec.sampleRate;
 }
 
-void ReconstructionExample::Synthesis::process(const juce::dsp::ProcessContextReplacing<float>& context) {
+void Reconstruction::Synthesis::process(const juce::dsp::ProcessContextReplacing<float>& context) {
 
 	bool sineEnabled = State::GetInstance()->getParameter("sine")->getValue();
 	bool noiseEnabled = State::GetInstance()->getParameter("noise")->getValue();
@@ -82,4 +82,4 @@ void ReconstructionExample::Synthesis::process(const juce::dsp::ProcessContextRe
 	}
 }
 
-void ReconstructionExample::Synthesis::reset() { }
+void Reconstruction::Synthesis::reset() { }

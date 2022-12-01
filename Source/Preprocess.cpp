@@ -1,8 +1,8 @@
 
-#include "PreprocessExample.h"
+#include "Preprocess.h"
 #include "SimulationState.h"
 
-void PreprocessExample::prepare(const juce::dsp::ProcessSpec& spec) {
+void Preprocess::prepare(const juce::dsp::ProcessSpec& spec) {
     static const int fmin = State::GetDenormalizedValue("fmin");
     static const int fmax = State::GetDenormalizedValue("fmax");
 
@@ -14,10 +14,10 @@ void PreprocessExample::prepare(const juce::dsp::ProcessSpec& spec) {
     iir.prepare(spec);
 }
 
-void PreprocessExample::process(const juce::dsp::ProcessContextReplacing<float>& context) {
+void Preprocess::process(const juce::dsp::ProcessContextReplacing<float>& context) {
     iir.process(context);
 }
 
-void PreprocessExample::reset() {
+void Preprocess::reset() {
     iir.reset();
 }

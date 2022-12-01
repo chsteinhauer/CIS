@@ -8,7 +8,7 @@
 
 using Duplicator = juce::dsp::ProcessorDuplicator<juce::dsp::IIR::Filter<float>, juce::dsp::IIR::Coefficients<float>>;
 
-class AnalyseExample {
+class Analyse {
 public:
     void prepare(const juce::dsp::ProcessSpec& spec);
     void process(const juce::dsp::ProcessContextReplacing< float >& context);

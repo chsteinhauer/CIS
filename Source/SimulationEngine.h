@@ -5,9 +5,6 @@
 #include <JuceHeader.h>
 #include "SimulationEditor.h"
 #include "SimulationState.h"
-#include "AnalyseExample.h"
-#include "PreprocessExample.h"
-#include "ReconstructionExample.h"
 
 template<typename ModuleA, typename ModuleB, typename ModuleC>
 class SimulationEngine : public juce::AudioProcessor,

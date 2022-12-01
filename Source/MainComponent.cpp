@@ -9,7 +9,7 @@ MainComponent::MainComponent(): juce::AudioAppComponent(otherDeviceManager)
     engine.reset();
     
     if (engine.get() == nullptr) {
-        engine.reset(new SimulationEngine<PreprocessExample, AnalyseExample, ReconstructionExample>());
+        engine.reset(new SimulationEngine<Preprocess, Analyse, Reconstruction>());
     }
 
     //Reset settings pointer

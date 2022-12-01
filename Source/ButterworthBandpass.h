@@ -38,15 +38,8 @@ private:
         juce::dsp::ProcessorChain<Cascading, Cascading, Cascading> highpass;
     };
 
-    /*FilterVector lowPassArray;
-    FilterVector highPassArray;*/
-
     std::vector<ButterworthSixthOrder> bandpasses;
-
-    float greenwood(float x);
 
     bool randomize;
     juce::Random random;
-
-    //std::unique_ptr<FilterVector> bandpasses;
 };

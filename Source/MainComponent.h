@@ -4,9 +4,9 @@
 #include <JuceHeader.h>
 #include "SpectrumVisualizer.h"
 #include "SimulationEngine.h"
-#include "PreprocessExample.h"
-#include "AnalyseExample.h"
-#include "ReconstructionExample.h"
+#include "Preprocess.h"
+#include "Analyse.h"
+#include "Reconstruction.h"
 #include "MediaPlayerComponent.h"
 
 class OtherLookAndFeel : public juce::LookAndFeel_V4
@@ -55,7 +55,7 @@ private:
 
     juce::AudioDeviceManager otherDeviceManager;
     std::unique_ptr<juce::AudioDeviceSelectorComponent> audioSettings;
-    std::unique_ptr<SimulationEngine<PreprocessExample, AnalyseExample, ReconstructionExample>> engine;
+    std::unique_ptr<SimulationEngine<Preprocess, Analyse, Reconstruction>> engine;
 
     SimulationEditor* editor;
 
