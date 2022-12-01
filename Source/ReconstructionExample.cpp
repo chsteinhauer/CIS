@@ -48,7 +48,7 @@ void ReconstructionExample::Synthesis::process(const juce::dsp::ProcessContextRe
 		hi = gw->convertFrom0to1(static_cast<float>(i) / N);
 
 		// setup sinewave
-		float fcenter = (static_cast<float>(hi) / lo) > 1.1 ? lo * pow(static_cast<float>(hi) / lo, 0.5) : static_cast<float>((hi - lo)) / 2;
+		float fcenter = lo * pow(static_cast<float>(hi) / lo, 0.5);
 		auto cyclesPerSample = fcenter / sampleRate;
 		float delta = cyclesPerSample * 2.0 * juce::MathConstants<double>::pi;
 		float angle = 0;
