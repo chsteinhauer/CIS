@@ -42,7 +42,7 @@ MainComponent::~MainComponent()
 void MainComponent::prepareToPlay (int samplesPerBlockExpected, double sampleRate)
 {
     engine -> prepareToPlay(sampleRate, samplesPerBlockExpected);
-    editor ->playerPanel.mediaPlayer.prepareMediaPlayer(samplesPerBlockExpected, sampleRate);
+    editor -> playerPanel.mediaPlayer.prepareMediaPlayer(samplesPerBlockExpected, sampleRate);
 }
 
 void MainComponent::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill)
@@ -74,6 +74,7 @@ void MainComponent::getNextAudioBlock(const juce::AudioSourceChannelInfo& buffer
         }
 
         auto* buffer = bufferToFill.buffer->getReadPointer(channel, bufferToFill.startSample);
+        
 
         for (auto i = 0; i < bufferToFill.numSamples; ++i)
         {
@@ -88,7 +89,6 @@ void MainComponent::getNextAudioBlock(const juce::AudioSourceChannelInfo& buffer
     auto volume = State::GetInstance()->getParameter("volume")->getValue();
     auto audio = State::GetInstance()->getParameter("audio")->getValue();
 
-    gain.setGainLinear(volume);
     if (!editor->playerPanel.outToggle.getToggleState()) {
 
         for (auto channel = 0; channel < maxOutputChannels; ++channel)

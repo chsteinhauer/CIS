@@ -26,6 +26,7 @@ public:
     Select channels;
     CheckBox sine;
     CheckBox noise;
+    CheckBox pshc;
 
     //FrequencySlider fmin;
     FrequencySlider fslider;

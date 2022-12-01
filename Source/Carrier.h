@@ -4,6 +4,7 @@
 #include <JuceHeader.h>
 #include "SimulationState.h"
 #include <random>
+#include <gammatone/filter.hpp>
 
 
 class Sine {
@@ -54,7 +55,8 @@ public:
 
     float next();
 
-    juce::Random random;
+    std::mt19937 rng{ std::random_device{}() };
+    std::normal_distribution<float> rand{ 0.0, 1.0 };
 };
 
 class PSHC {
@@ -63,13 +65,28 @@ public:
     ~PSHC();
 
     void prepare(const juce::dsp::ProcessSpec& spec);
-    void process(const juce::dsp::ProcessContextReplacing<float>& context);
+    float next(int channel);
     void reset();
-    float genHarmonic(int k);
 
-    std::default_random_engine gen{};
-    std::vector<int> r;
-    std::uniform_int_distribution<int> u{ 0,1 };
+private:
 
-    const float f0 = 0.3f;
+    struct HarmonicComplex {
+        HarmonicComplex();
+        HarmonicComplex(const HarmonicComplex&) = delete;
+        HarmonicComplex& operator=(const HarmonicComplex&) = delete;
+        HarmonicComplex(HarmonicComplex&&) = default;
+        HarmonicComplex& operator=(HarmonicComplex&&) = default;
+
+        void genHarmonics(float lo, float hi, float sampleRate);
+        float getSample();
+        void reset();
+
+        const float f0 = 0.3f;
+        int currentIndex = 0;
+
+        std::vector<float> pshc;
+        std::mt19937 rng{ std::random_device{}() };
+    };
+
+    std::vector<HarmonicComplex> pshcs;
 };

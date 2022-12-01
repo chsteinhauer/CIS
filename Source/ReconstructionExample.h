@@ -28,12 +28,13 @@ private:
 
         Sine sine;
         Noise noise;
+        PSHC pshc;
         juce::dsp::Gain<float> gain;
     };
 
     ButterworthBandpass butterworth;
     Synthesis synth;
-
+    juce::dsp::Compressor<float> compressor;
 };
 
 

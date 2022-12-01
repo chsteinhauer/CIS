@@ -37,7 +37,7 @@ void Sine::reset() {
 
 std::vector<float> Sine::generateSineWaveTable()
 {
-    constexpr auto WAVETABLE_LENGTH = 128;
+    constexpr auto WAVETABLE_LENGTH = 64;
     const auto PI = std::atanf(1.f) * 4;
     std::vector<float> sineWaveTable = std::vector<float>(WAVETABLE_LENGTH);
 
@@ -82,7 +82,7 @@ Noise::Noise() { }
 Noise::~Noise() { }
 
 float Noise::next() {
-    return random.nextFloat();
+    return rand(rng);
 }
 
 
@@ -90,40 +90,105 @@ PSHC::PSHC() { }
 PSHC::~PSHC() { }
 
 void PSHC::prepare(const juce::dsp::ProcessSpec& spec) {
-    std::vector<int> tmp(7);
-    std::iota(std::begin(tmp), std::end(tmp), 0);
+    int N = spec.numChannels;
+    if (N <= 0) return;
 
-    r.clear();
-    r.swap(tmp);
+    std::vector<HarmonicComplex> _pshcs(N);
 
-    tmp.clear();
+    auto gw = State::GetInstance()->getParameter("Greenwood");
 
-    std::shuffle(std::begin(r), std::end(r), gen);
+    float lo = gw->convertFrom0to1(0);
+    float hi = 0;
+
+    for (auto i = 0; i < N; ++i)
+    {
+        hi = gw->convertFrom0to1(static_cast<float>(i + 1) / N);
+        
+        _pshcs.at(i).genHarmonics(lo, hi, spec.sampleRate);
+
+        lo = hi;
+    }
+
+    pshcs.swap(_pshcs);
+    _pshcs.clear();
 }
 
-void PSHC::process(const juce::dsp::ProcessContextReplacing<float>& context) {
-    int k = 10;
+float PSHC::next(int channel) {
+    return pshcs.at(channel).getSample();
+}
+
+PSHC::HarmonicComplex::HarmonicComplex() {}
+
+void PSHC::HarmonicComplex::genHarmonics(float lo, float hi, float sampleRate) {
+    float fcenter = lo * pow(static_cast<float>(hi) / lo, 0.5);
+
+    const float M = State::GetDenormalizedValue("fmin");
+    const float N = State::GetDenormalizedValue("fmax");
+    const float PI = 2 * std::atanf(1.f) * 4;
+
+    // Calculate pulse-per-second (pps) based on formula from Mesnildrey et al. (2016)
+    const float fkHz = fcenter * 0.001;
+    const float pps = 37 + 151 * fkHz + 0.17 * pow(fkHz, 2);
+
+    // The square root of pps determines the order k
+    const int k = std::roundf(std::sqrtf(pps));
+    const int TABLE_LENGTH = (sampleRate / ( k * k));
+
+    std::vector<int> r(k);
+    std::iota(std::begin(r), std::end(r), 0);
+    std::shuffle(std::begin(r), std::end(r), rng);
+
+    std::vector<int> u(k);
+    u = r;
+    std::shuffle(std::begin(u), std::end(u), rng);
+
+    std::vector<float> harmonics = std::vector<float>(TABLE_LENGTH, 0.f);
+
+    for (int i = lo; i < hi; ++i) {
+
+        auto j = i % k;
+        auto phase = PI * ((static_cast<float>(i) / pow(k, 2)) * r.at(j) + (u.at(j) % 2));
+        auto delta = PI * f0 * i * (1/sampleRate);
+        auto angle = phase;
+
+        for (int l = 0; l < TABLE_LENGTH; ++l) {
+            harmonics.at(l) += std::sinf(angle);
+
+            angle += delta;
+        }
+    }
+
+    gammatone::filter<float> gammatoneFilter(sampleRate, fcenter);
+    gammatoneFilter.compute_range(harmonics.begin(), harmonics.end(), harmonics.begin());
+
+    auto max = *std::max_element(std::begin(harmonics), std::end(harmonics)); 
+    auto min = *std::min_element(std::begin(harmonics), std::end(harmonics));
+
+    auto fdiff = 1 / (max - min);
     
+    for (auto it = harmonics.begin(); it != harmonics.end(); it++) {
+        *it = 2 * (*it - min) * fdiff - 1;
+    }
+    
+    pshc.swap(harmonics);
+    harmonics.clear();
+    r.clear();
 }
 
-float PSHC::genHarmonic(int k) {
-    auto& r_ = r;
+float PSHC::HarmonicComplex::getSample() {
+    if (currentIndex == pshc.size())
+        currentIndex = 0;
 
-    float M = State::GetDenormalizedValue("fmin");
-    float N = State::GetDenormalizedValue("fmax");
+    return pshc.at(currentIndex++);
+}
 
-    float sine = 0.f;
-
-   /* for (int i = M; i < N; i++) {
-        auto j = (i % k) + 1;
-        auto p = juce::MathConstants<float>::twoPi * ((i / pow(k, 2)) * r_.back());
-        sine += std::sinf();
-
-        r_.pop_back();
-    }*/
-
-    return sine;
+void PSHC::HarmonicComplex::reset() {
+    pshc.clear();
 }
 
 void PSHC::reset() {
+    for (auto& pshc : pshcs)
+        pshc.reset();
+
+    pshcs.clear();
 }

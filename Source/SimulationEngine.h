@@ -38,8 +38,15 @@ public:
             simulation.reset();
 
             int N = State::GetDenormalizedValue("channelN");
-            simulation.prepare({ sampleRate, (juce::uint32)blockSize, (juce::uint32)N });
             tempBlock.reset(new juce::dsp::AudioBlock<float>(tempBlockMemory, N, blockSize));
+
+            if (N > 0) {
+                simulation.prepare({ sampleRate, (juce::uint32)blockSize, (juce::uint32)N });
+            }
+            else
+            {
+                simulation.reset();
+            }
         }
     }
 
@@ -51,7 +58,13 @@ public:
         auto N = State::GetDenormalizedValue("channelN");
 
         tempBlock.reset(new juce::dsp::AudioBlock<float>(tempBlockMemory, N, blockSize));
-        simulation.prepare({ sampleRate, (juce::uint32)blockSize, (juce::uint32)N });
+        if (N > 0) {
+            simulation.prepare({ sampleRate, (juce::uint32)blockSize, (juce::uint32)N });
+        }
+        else
+        {
+            simulation.reset();
+        }
     }
 
     void releaseResources() override
@@ -64,6 +77,7 @@ public:
 
         jassert(!isUsingDoublePrecision());
 
+        //float level = bufferToFill.buffer->getRMSLevel(0, bufferToFill.startSample, bufferToFill.numSamples);
 
         //// Store original buffer pointer in output block
         juce::dsp::AudioBlock<float> outputBlock(*bufferToFill.buffer, bufferToFill.startSample);
