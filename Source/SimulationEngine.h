@@ -17,17 +17,29 @@ public:
     SimulationEngine() : AudioProcessor(getBusesProperties()) {
         State::Initialize(*this);
 
-        State::GetInstance()->addParameterListener("channelN",this);
+        State::GetInstance()->addParameterListener("fmin", this);
+        State::GetInstance()->addParameterListener("channelN", this);
+        State::GetInstance()->addParameterListener("fmax", this);
+
     }
     ~SimulationEngine() {}
 
     void parameterChanged(const juce::String& parameterID, float newValue) {
-        if (parameterID == "channelN") {
-
+        if (parameterID == "channelN")
+        {
             juce::ScopedLock audioLock(audioCallbackLock);
             simulation.reset();
             simulation.prepare({ sampleRate, (juce::uint32)blockSize, (juce::uint32)newValue });
             tempBlock.reset(new juce::dsp::AudioBlock<float>(tempBlockMemory, newValue, blockSize));
+        } 
+        else if (parameterID == "fmin" || parameterID == "fmax")
+        {
+            juce::ScopedLock audioLock(audioCallbackLock);
+            simulation.reset();
+
+            int N = State::GetDenormalizedValue("channelN");
+            simulation.prepare({ sampleRate, (juce::uint32)blockSize, (juce::uint32)N });
+            tempBlock.reset(new juce::dsp::AudioBlock<float>(tempBlockMemory, N, blockSize));
         }
     }
 

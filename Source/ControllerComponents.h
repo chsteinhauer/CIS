@@ -43,6 +43,20 @@ struct VolumeSlider : public juce::Slider {
     juce::Label label;
 };
 
+struct FrequencySlider : public juce::Slider, public juce::AudioProcessorValueTreeState::Listener {
+    FrequencySlider(std::string _label);
+    ~FrequencySlider();
+
+    void mouseDown(const juce::MouseEvent& evt) override;
+    void mouseUp(const juce::MouseEvent& evt) override;
+    juce::String getTextFromValue(double value) override;
+    void parameterChanged(const juce::String& parameterID, float newValue) override;
+    void updateValueTree();
+
+    //juce::AudioProcessorValueTreeState::SliderAttachment attachment;
+    juce::Label label;
+};
+
 struct AudioToggleButton : public juce::ImageButton, juce::AudioProcessorValueTreeState::Listener {
 
     AudioToggleButton();

@@ -26,12 +26,6 @@ ReconstructionExample::Synthesis::~Synthesis() {}
 
 void ReconstructionExample::Synthesis::prepare(const juce::dsp::ProcessSpec& spec) {
 	sampleRate = spec.sampleRate;
-
-	iir.reset();
-	auto coeffs = juce::dsp::FilterDesign<float>::designIIRLowpassHighOrderButterworthMethod(200, spec.sampleRate, 2);
-
-	*iir.state = *coeffs[0];
-	iir.prepare(spec);
 }
 
 void ReconstructionExample::Synthesis::process(const juce::dsp::ProcessContextReplacing<float>& context) {
@@ -44,8 +38,6 @@ void ReconstructionExample::Synthesis::process(const juce::dsp::ProcessContextRe
 	Block block(context.getOutputBlock());
 	int N = block.getNumChannels();
 
-	float scale = std::exp(-State::GetDenormalizedValue("channelN")/2);
-
 	auto gw = State::GetInstance()->getParameter("Greenwood");
 
 	float lo = gw->convertFrom0to1(0);
@@ -55,14 +47,11 @@ void ReconstructionExample::Synthesis::process(const juce::dsp::ProcessContextRe
 		int channel = i - 1;
 		hi = gw->convertFrom0to1(static_cast<float>(i) / N);
 
-		float fcenter = lo * pow((hi / lo), 0.5);
+		// setup sinewave
+		float fcenter = (static_cast<float>(hi) / lo) > 1.1 ? lo * pow(static_cast<float>(hi) / lo, 0.5) : static_cast<float>((hi - lo)) / 2;
 		auto cyclesPerSample = fcenter / sampleRate;
 		float delta = cyclesPerSample * 2.0 * juce::MathConstants<double>::pi;
 		float angle = 0;
-
-		auto par = State::GetInstance()->getParameter("channel" + std::to_string(i));
-		auto value = par->getValue();
-		gain.setGainLinear(value);
 
 		float* data = block.getChannelPointer(channel);
 
@@ -83,15 +72,14 @@ void ReconstructionExample::Synthesis::process(const juce::dsp::ProcessContextRe
 			}
 		}
 
+		auto par = State::GetInstance()->getParameter("channel" + std::to_string(i));
+		auto value = par->getValue();
+		gain.setGainLinear(value);
 
 		gain.process(juce::dsp::ProcessContextReplacing<float>(block.getSingleChannelBlock(channel)));
 
 		lo = hi;
 	}
-
-	//iir.process(context);
 }
 
-void ReconstructionExample::Synthesis::reset() {
-	iir.reset();
-}
+void ReconstructionExample::Synthesis::reset() { }
