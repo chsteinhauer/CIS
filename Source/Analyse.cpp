@@ -1,16 +1,16 @@
 
-#include "AnalyseExample.h"
+#include "Analyse.h"
 
-void AnalyseExample::prepare(const juce::dsp::ProcessSpec& spec) {
+void Analyse::prepare(const juce::dsp::ProcessSpec& spec) {
     bandpass.remakeFilters(spec);
     extractor.prepareHalfwaveRectification(spec);
 }
 
-void AnalyseExample::process(const juce::dsp::ProcessContextReplacing<float>& context) {
+void Analyse::process(const juce::dsp::ProcessContextReplacing<float>& context) {
     bandpass.process(context.getOutputBlock());
     extractor.halfwaveRectification(context.getOutputBlock());
 }
 
-void AnalyseExample::reset() {
+void Analyse::reset() {
     bandpass.clearFilters();
 }

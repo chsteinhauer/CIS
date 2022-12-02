@@ -17,9 +17,11 @@ public:
     void halfwaveRectification(const juce::dsp::ProcessContextReplacing<float>& context);
     void hilbertTransform(juce::dsp::AudioBlock<float> block);
     void prepareHalfwaveRectification(const juce::dsp::ProcessSpec& spec);
+    void reset();
 
 private:
 
     std::vector<std::unique_ptr<juce::dsp::IIR::Filter<float>>> filters;
-    //juce::dsp::ProcessorDuplicator<juce::dsp::IIR::Filter<float>, juce::dsp::IIR::Coefficients<float>> iir;
+    juce::dsp::ProcessorDuplicator<juce::dsp::IIR::Filter<float>, juce::dsp::IIR::Coefficients<float>> iir;
+
 };

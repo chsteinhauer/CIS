@@ -52,15 +52,20 @@ juce::AudioProcessorValueTreeState::ParameterLayout State::createParameters() {
     // bools
     layout.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID{ "audio",   1 }, "Audio", false));
     layout.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID{ "sine",    1 }, "Sine", true));
-    layout.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID{ "noise",   1 }, "Noise", true));
+    layout.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID{ "noise",   1 }, "Noise", false));
+    layout.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID{ "pshc",   1 }, "PSHC", false));
 
     // ranges
+    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{ "fmin",    1 }, "Frequency min",
+        juce::NormalisableRange<float>(20, 20000, 0.1f), 250));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{ "fmax",    1 }, "Frequency max",
+        juce::NormalisableRange<float>(20, 20000, 0.1f), 4500));
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{ "volume",    1 }, "Volume",
         juce::NormalisableRange<float>(0.0f, 1.0f), 1.0f));
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{ "channelN",  1 }, "Number of Channels",
         juce::NormalisableRange<float>(0, maxNumChannels, 1), 0));
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{ "Greenwood", 1 }, "Scaled Frequencies in Human Cochlear",
-        getGreenwoodRange(greenwood(0), greenwood(1)), 20));
+        getGreenwoodRange(20, 20000), 20));
 
     // Gain sliders
     for (int i = 1; i <= maxNumChannels; i++) {
@@ -90,30 +95,36 @@ juce::StringArray State::GetAllValueStrings(std::string id) {
     return values;
 }
 
+juce::NormalisableRange<float> State::getGreenwood()
+{
+    auto min = State::GetDenormalizedValue("fmin");
+    auto max = State::GetDenormalizedValue("fmax");
+
+    // TODO: small hack, we need a better way to handle this
+    if (min == max)
+        max = max + 1;
+
+    return juce::NormalisableRange<float>(min, max,
+        [=](float min, float, float v) { return greenwood(v); },
+        [=](float min, float, float v) { return inverseGreenwood(v); }
+    );
+}
+
 juce::NormalisableRange<float> State::getGreenwoodRange(float min, float max) 
 {
-
     return juce::NormalisableRange<float> (min, max, 
         [=](float min, float, float v) { return greenwood(v); },
         [=](float min, float, float v) { return inverseGreenwood(v); }
     );
 }
 
-float State::inverseGreenwood(float x) {
+float State::inverseGreenwood(float f) {
     //Constants for greenwood function applied to the human cochlear
     const float A = 165.4f;
     const float a = 2.1f;
     const float K = 0.88f;
 
-    const float min = 0.0f;
-    const float max = 1.0f;
-    const float newMin = 0.180318f;
-    const float newMax = 0.689763f;
-
-    x = map(x, min, max, newMin, newMax);
-    //Adjusted constants for frequency range 250-4500Hz
-
-    return (log10((x / A) + K) / a);
+    return (log10((f / A) + K) / a);
 }
 
 float State::greenwood(float x)
@@ -123,12 +134,14 @@ float State::greenwood(float x)
     const float a = 2.1f;
     const float K = 0.88f;
 
-    const float min = 0.0f;
-    const float max = 1.0f;
-    const float newMin = 0.180318f;
-    const float newMax = 0.689763f;
+    if (pinstance_ != nullptr) {
+        const float min = 0.0f;
+        const float max = 1.0f;
+        auto newMin = inverseGreenwood(State::GetDenormalizedValue("fmin"));
+        auto newMax = inverseGreenwood(State::GetDenormalizedValue("fmax"));
 
-    x = map(x, min, max, newMin, newMax);
+        x = map(x, min, max, newMin, newMax);
+    }
 
     if (x > 1 || x < 0)
     {

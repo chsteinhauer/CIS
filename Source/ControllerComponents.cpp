@@ -98,6 +98,68 @@ void VolumeSlider::mouseUp(const juce::MouseEvent& evt) {
 }
 
 
+/* FrequencySlider */
+FrequencySlider::FrequencySlider(std::string _label) { //: attachment(*State::GetInstance(), id, *this) {
+    setSliderStyle(juce::Slider::TwoValueHorizontal);
+    setRange(20, 20000, 0.1f);
+
+    // default slider config
+    setSize(200, 75);
+    setTextBoxStyle(juce::Slider::TextBoxBelow,true,200,25);
+
+    if (!_label.empty()) {
+        label.setText(_label, juce::dontSendNotification);
+        label.attachToComponent(this, false);
+    }
+
+    addAndMakeVisible(label);
+
+    setMinAndMaxValues(250, 4500);
+
+    State::GetInstance()->addParameterListener("fmin", this);
+    State::GetInstance()->addParameterListener("fmax", this);
+
+    onValueChange = [this] { updateValueTree(); };
+}
+
+void FrequencySlider::parameterChanged(const juce::String& parameterID, float newValue) {
+    /*if (parameterID == "fmin") {
+        setMinValue(newValue);
+    } else if (parameterID == "fmax") {
+        setMaxValue(newValue);
+    }*/
+}
+
+void FrequencySlider::updateValueTree() {
+    auto fmin = State::GetInstance()->getParameter("fmin");
+    auto minValue = fmin->convertTo0to1(getMinValue());
+    fmin->setValueNotifyingHost(minValue);
+
+    auto fmax = State::GetInstance()->getParameter("fmax");
+    auto maxValue = fmax->convertTo0to1(getMaxValue());
+    fmax->setValueNotifyingHost(maxValue);
+
+    updateText();
+}
+
+juce::String FrequencySlider::getTextFromValue(double value) {
+
+    return juce::String(getMinValue()) + " Hz - " + juce::String(getMaxValue()) + " Hz";
+}
+
+FrequencySlider::~FrequencySlider() {}
+
+void FrequencySlider::mouseDown(const juce::MouseEvent& evt) {
+    setMouseCursor(juce::MouseCursor::DraggingHandCursor);
+    juce::Slider::mouseDown(evt);
+}
+
+void FrequencySlider::mouseUp(const juce::MouseEvent& evt) {
+    setMouseCursor(juce::MouseCursor::NormalCursor);
+    juce::Slider::mouseUp(evt);
+}
+
+
 /* AudioToggleButton */
 
 AudioToggleButton::AudioToggleButton() : attachment(*State::GetInstance(), "audio", *this) {

@@ -20,12 +20,15 @@ public:
     juce::FlexBox panel;
     juce::FlexBox checkBoxes;
     juce::FlexBox channelControllers;
-
+    juce::FlexBox freqSliders;
     
 
     Select channels;
     CheckBox sine;
     CheckBox noise;
-    juce::ComboBox todo;
+    CheckBox pshc;
+
+    //FrequencySlider fmin;
+    FrequencySlider fslider;
     std::vector<std::unique_ptr<VolumeSlider>> sliders;
 };
