@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="i4eibK" name="CochlearImplantSimulator" projectType="guiapp"
               useAppConfig="0" addUsingNamespaceToJuceHeader="0" displaySplashScreen="1"
-              jucerFormatVersion="1" headerPath="C:\Repos\JUCE\CIS\libgammatone\include"
+              jucerFormatVersion="1" headerPath="C:\Repos\JUCE\CIS\libgammatone\include&#10;C:\AAU\SMC7\CIS\libgammatone\include"
               defines="M_PI=3.14159265358979323846">
   <MAINGROUP id="TcNcXX" name="CochlearImplantSimulator">
     <GROUP id="{5D28BEAE-AB3A-B242-30FA-A02311F821E6}" name="Source">
