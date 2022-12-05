@@ -1,0 +1,3 @@
+[submodule "libgammatone"]
+	path = libgammatone
+	url = https://github.com/mmmaat/libgammatone.git

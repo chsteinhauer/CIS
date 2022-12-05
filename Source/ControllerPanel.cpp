@@ -4,11 +4,13 @@
 ControllerPanel::ControllerPanel() : 
     sine("sine", "Sine processor"), 
     noise("noise","Noise processor"),
+    pshc("pshc", "PSHC processor"),
     channels("channelN","Select number of channels"),
     fslider("Frequency range")
 {
     addAndMakeVisible(sine);
     addAndMakeVisible(noise);
+    addAndMakeVisible(pshc);
     addAndMakeVisible(channels);
     addAndMakeVisible(fslider);
 
@@ -24,6 +26,7 @@ ControllerPanel::ControllerPanel() :
     checkBoxes.items.add(flexItem(&channels).withMargin({18,7,0,7}));
     checkBoxes.items.add(flexItem(&sine));
     checkBoxes.items.add(flexItem(&noise));
+    checkBoxes.items.add(flexItem(&pshc));
 
     channelControllers.alignItems = juce::FlexBox::AlignItems::center;
     channelControllers.flexDirection = juce::FlexBox::Direction::row;

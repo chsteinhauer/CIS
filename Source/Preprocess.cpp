@@ -1,5 +1,5 @@
 
-#include "PreprocessExample.h"
+#include "Preprocess.h"
 #include "SimulationState.h"
 
 void PreprocessExample::prepare(const juce::dsp::ProcessSpec& spec) {
@@ -10,8 +10,7 @@ void PreprocessExample::prepare(const juce::dsp::ProcessSpec& spec) {
     static const int fmin = State::GetDenormalizedValue("fmin");
     static const int fmax = State::GetDenormalizedValue("fmax");
 
-    float fcenter = (static_cast<float>(fmax) / fmin) > 1.1 ? fmin * pow(static_cast<float>(fmax) / fmin, 0.5) : static_cast<float>((fmax - fmin)) / 2;
-
+    float fcenter = fmin * pow(static_cast<float>(fmax) / fmin, 0.5);
     float filterQ = sqrt(fmin * fmax) / (fmax - fmin);
 
     iir.state = juce::dsp::IIR::Coefficients<float>::makeBandPass(spec.sampleRate, fcenter, filterQ);
@@ -30,13 +29,13 @@ void PreprocessExample::prepare(const juce::dsp::ProcessSpec& spec) {
     expander.prepare(spec);
 }
 
-void PreprocessExample::process(const juce::dsp::ProcessContextReplacing<float>& context) {
+void Preprocess::process(const juce::dsp::ProcessContextReplacing<float>& context) {
     iir.process(context);
     compressor.process(context);
     expander.process(context);
 }
 
-void PreprocessExample::reset() {
+void Preprocess::reset() {
     iir.reset();
     compressor.reset();
     expander.reset();

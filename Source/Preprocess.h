@@ -3,7 +3,7 @@
 
 #include <JuceHeader.h>
 
-class PreprocessExample {
+class Preprocess {
 public:
     void prepare(const juce::dsp::ProcessSpec& spec);
     void process(const juce::dsp::ProcessContextReplacing< float >& context);
