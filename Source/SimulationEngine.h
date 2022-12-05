@@ -70,7 +70,7 @@ public:
 
         juce::ScopedLock audioLock(audioCallbackLock);
 
-        if (tempBlock->getNumChannels() > 0) {
+        if (tempBlock->getNumChannels() > 0 && State::GetDenormalizedValue("channelN") > 0) {
 
 
             //// Copy content of main block to N amount of channels in tempBlock
