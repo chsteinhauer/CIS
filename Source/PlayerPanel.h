@@ -5,6 +5,7 @@
 #include "MediaPlayerComponent.h"
 #include "ChannelSpectrumVisualizer.h"
 #include "ChannelFilterVisualizer.h"
+#include "ControllerComponents.h"
 
 class PlayerPanel : public juce::Component {
 public:
@@ -27,6 +28,6 @@ public:
     SpectrumVisualizer OUT;
     ChannelSpectrumVisualizer OUT_CHANNELS;
 
-    juce::ToggleButton mediaToggle;
+    CheckBox mediaToggle;
     MediaPlayerComponent mediaPlayer;
 };
