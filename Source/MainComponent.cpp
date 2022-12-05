@@ -61,6 +61,7 @@ void MainComponent::getNextAudioBlock(const juce::AudioSourceChannelInfo& buffer
 
     if (editor->playerPanel.mediaToggle.getToggleState())
     {
+        
         editor->playerPanel.mediaPlayer.getMediaAudioBlock(bufferToFill);
     }
 

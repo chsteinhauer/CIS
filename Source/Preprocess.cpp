@@ -2,7 +2,7 @@
 #include "Preprocess.h"
 #include "SimulationState.h"
 
-void PreprocessExample::prepare(const juce::dsp::ProcessSpec& spec) {
+void Preprocess::prepare(const juce::dsp::ProcessSpec& spec) {
     if (spec.numChannels <= 0 ) {
         return;
     }
@@ -30,9 +30,13 @@ void PreprocessExample::prepare(const juce::dsp::ProcessSpec& spec) {
 }
 
 void Preprocess::process(const juce::dsp::ProcessContextReplacing<float>& context) {
+    if (context.isBypassed) {
+        return;
+    }
     iir.process(context);
-    compressor.process(context);
-    expander.process(context);
+    // Do not uncomment
+    //compressor.process(context);
+    //expander.process(context);
 }
 
 void Preprocess::reset() {

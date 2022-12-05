@@ -1,13 +1,3 @@
-/*
-  ==============================================================================
-
-    MediaPlayerComponent.cpp
-    Created: 3 Nov 2022 11:47:23am
-    Author:  Sonderbo
-
-  ==============================================================================
-*/
-
 #include <JuceHeader.h>
 #include "MediaPlayerComponent.h"
 

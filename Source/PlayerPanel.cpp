@@ -1,10 +1,10 @@
 
 #include "PlayerPanel.h"
 
-PlayerPanel::PlayerPanel() {
+PlayerPanel::PlayerPanel(): mediaToggle("togglemedia","Use media as input") {
     addAndMakeVisible(mediaPlayer);
     addAndMakeVisible(mediaToggle);
-    mediaToggle.setButtonText("Use media as input");
+    //mediaToggle.setButtonText("Use media as input");
     mediaToggle.onClick = [this] { mediaToggleButtonChanged(); };
     mediaPlayer.setEnabled(mediaToggle.getToggleState());
 
