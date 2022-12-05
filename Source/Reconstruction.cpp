@@ -7,25 +7,16 @@ Reconstruction::~Reconstruction() { }
 void Reconstruction::prepare(const juce::dsp::ProcessSpec& spec) {
 	synth.prepare(spec);
 	butterworth.remakeFilters(spec);
-
-	//compressor.reset();
-	//compressor.setRatio(1.0);
-	//compressor.setThreshold(0);
-	//compressor.setAttack(0);
-	//compressor.setRelease(0);
-	//compressor.prepare(spec);
 }
 
 void Reconstruction::process(const juce::dsp::ProcessContextReplacing<float>& context) {
 	synth.process(context);
 	butterworth.process(context.getOutputBlock());
-	//compressor.process(context);
 }
 
 void Reconstruction::reset() {
 	synth.reset();
 	butterworth.clearFilters();
-	//compressor.reset();
 }
 
 Reconstruction::Synthesis::Synthesis() {}
@@ -82,4 +73,8 @@ void Reconstruction::Synthesis::process(const juce::dsp::ProcessContextReplacing
 void Reconstruction::Synthesis::reset() { 
 	sine.reset();
 	pshc.reset();
+
+	/*auto O = 0.5;
+
+	auto lo = 250 * 2 ^ O;*/
 }

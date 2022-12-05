@@ -67,6 +67,11 @@ juce::AudioProcessorValueTreeState::ParameterLayout State::createParameters() {
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{ "Greenwood", 1 }, "Scaled Frequencies in Human Cochlear",
         getGreenwoodRange(20, 20000), 20));
 
+    //auto erbMismatches = juce::StringPairArray();
+    //erbMismatches.set("test",);
+ /*   layout.add(std::make_unique<juce::AudioParameterChoice>(juce::ParameterID{ "Greenwood", 1 }, "Scaled Frequencies in Human Cochlear",
+        ,0));*/
+
     // Gain sliders
     for (int i = 1; i <= maxNumChannels; i++) {
         layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{ "channel" + std::to_string(i), 1 }, "Channel " + juce::String(i), 0.0f, 2.0f, 1.0f));
