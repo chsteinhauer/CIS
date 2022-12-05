@@ -5,18 +5,43 @@ Reconstruction::Reconstruction() { }
 Reconstruction::~Reconstruction() { }
 
 void Reconstruction::prepare(const juce::dsp::ProcessSpec& spec) {
+	if (spec.numChannels <= 0) {
+		return;
+	}
+
 	synth.prepare(spec);
 	butterworth.remakeFilters(spec);
+	compressor.reset();
+	expander.reset();
+
+	compressor.setThreshold(-20);
+	compressor.setRatio(12);
+	compressor.setAttack(5);
+	compressor.setRelease(100);
+	compressor.prepare(spec);
+
+	expander.setThreshold(-40);
+	expander.setRatio(12);
+	expander.setAttack(5);
+	expander.setRelease(100);
+	expander.prepare(spec);
 }
 
 void Reconstruction::process(const juce::dsp::ProcessContextReplacing<float>& context) {
+	if (context.isBypassed) {
+		return;
+	}
 	synth.process(context);
 	butterworth.process(context.getOutputBlock());
+	compressor.process(context);
+	expander.process(context);
 }
 
 void Reconstruction::reset() {
 	synth.reset();
 	butterworth.clearFilters();
+	compressor.reset();
+	expander.reset();
 }
 
 Reconstruction::Synthesis::Synthesis() {}

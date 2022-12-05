@@ -35,6 +35,7 @@ private:
     ButterworthBandpass butterworth;
     Synthesis synth;
     juce::dsp::Compressor<float> compressor;
+    juce::dsp::NoiseGate<float> expander;
 };
 
 

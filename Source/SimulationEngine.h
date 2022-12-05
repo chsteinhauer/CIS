@@ -17,7 +17,7 @@ public:
         State::GetInstance()->addParameterListener("fmin", this);
         State::GetInstance()->addParameterListener("channelN", this);
         State::GetInstance()->addParameterListener("fmax", this);
-
+        State::GetInstance()->addParameterListener("togglemedia", this);
     }
     ~SimulationEngine() {}
 
@@ -29,7 +29,7 @@ public:
             simulation.prepare({ sampleRate, (juce::uint32)blockSize, (juce::uint32)newValue });
             tempBlock.reset(new juce::dsp::AudioBlock<float>(tempBlockMemory, newValue, blockSize));
         } 
-        else if (parameterID == "fmin" || parameterID == "fmax")
+        else if (parameterID == "fmin" || parameterID == "fmax" || parameterID == "togglemedia")
         {
             juce::ScopedLock audioLock(audioCallbackLock);
             simulation.reset();
@@ -39,10 +39,17 @@ public:
 
             if (N > 0) {
                 simulation.prepare({ sampleRate, (juce::uint32)blockSize, (juce::uint32)N });
+                simulation.setBypassed<0>(false);
+                simulation.setBypassed<1>(false);
+                simulation.setBypassed<2>(false);
             }
             else
             {
+
                 simulation.reset();
+                simulation.setBypassed<0>(true);
+                simulation.setBypassed<1>(true);
+                simulation.setBypassed<2>(true);
             }
         }
     }
@@ -57,10 +64,17 @@ public:
         tempBlock.reset(new juce::dsp::AudioBlock<float>(tempBlockMemory, N, blockSize));
         if (N > 0) {
             simulation.prepare({ sampleRate, (juce::uint32)blockSize, (juce::uint32)N });
+            simulation.setBypassed<0>(false);
+            simulation.setBypassed<1>(false);
+            simulation.setBypassed<2>(false);
         }
         else
         {
+
             simulation.reset();
+            simulation.setBypassed<0>(true);
+            simulation.setBypassed<1>(true);
+            simulation.setBypassed<2>(true);
         }
     }
 
@@ -81,7 +95,7 @@ public:
 
         juce::ScopedLock audioLock(audioCallbackLock);
 
-        if (tempBlock->getNumChannels() > 0) {
+        if (tempBlock->getNumChannels() > 0 && State::GetDenormalizedValue("channelN") > 0) {
 
 
             //// Copy content of main block to N amount of channels in tempBlock

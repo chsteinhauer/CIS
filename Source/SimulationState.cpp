@@ -54,6 +54,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout State::createParameters() {
     layout.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID{ "sine",    1 }, "Sine", true));
     layout.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID{ "noise",   1 }, "Noise", false));
     layout.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID{ "pshc",   1 }, "PSHC", false));
+    layout.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID{ "togglemedia",   1 }, "togglemedia", false));
 
     // ranges
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{ "fmin",    1 }, "Frequency min",
