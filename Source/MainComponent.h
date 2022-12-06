@@ -49,7 +49,7 @@ public:
     void visualizeOutput(const float* buffer, int size);
     void GUISetup();
 
-private:
+protected:
     //==============================================================================
     // Your private member variables go here...
 
