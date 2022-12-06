@@ -39,11 +39,14 @@ public:
     void prepareToPlay (int samplesPerBlockExpected, double sampleRate) override;
     void getNextAudioBlock (const juce::AudioSourceChannelInfo& bufferToFill) override;
     void releaseResources() override;
+    void reset();
 
     //==============================================================================
     void paint (juce::Graphics& g) override;
     void resized() override;
 
+    void visualizeInput(const float* buffer, int size);
+    void visualizeOutput(const float* buffer, int size);
     void GUISetup();
 
 private:

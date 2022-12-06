@@ -83,46 +83,6 @@ public:
         simulation.reset();
     }
 
-    void beginSimulationProcess(const juce::AudioSourceChannelInfo& bufferToFill)
-    {
-
-        jassert(!isUsingDoublePrecision());
-
-        //float level = bufferToFill.buffer->getRMSLevel(0, bufferToFill.startSample, bufferToFill.numSamples);
-
-        //// Store original buffer pointer in output block
-        juce::dsp::AudioBlock<float> outputBlock(*bufferToFill.buffer, bufferToFill.startSample);
-
-        juce::ScopedLock audioLock(audioCallbackLock);
-
-        if (tempBlock->getNumChannels() > 0 && State::GetDenormalizedValue("channelN") > 0) {
-
-
-            //// Copy content of main block to N amount of channels in tempBlock
-            copyBlockToNChannels(bufferToFill);
-
-            //// Run the simulation...!
-            simulation.process(juce::dsp::ProcessContextReplacing<float>(*tempBlock));
-
-            //// Pack processed data back to the original amount of channels
-            auto simulatedBlock = packBlockToOrgChannels();
-
-            outputBlock.fill(0);
-
-            // Now outputBlock may copy the results
-            for (int i = 0; i < outputBlock.getNumChannels(); i++) {
-                outputBlock.getSingleChannelBlock(i).copyFrom(simulatedBlock);
-            }
-        }
-        else {
-
-            auto volume = State::GetInstance()->getParameter("volume")->getValue();
-            auto audio = State::GetInstance()->getParameter("audio")->getValue();
-
-            outputBlock.multiplyBy(volume * !audio * (State::GetDenormalizedValue("channelN") > 0 ? 1 : 0.3));
-        }
-    }
-
     bool hasEditor() const override { return true; }
 
     SimulationEditor* getEditor()
@@ -136,6 +96,37 @@ public:
         editor = new SimulationEditor(*this);
 
         return editor;
+    }
+
+    void processBlockSimulation(juce::dsp::AudioBlock<float> block) {
+        juce::ScopedLock audioLock(audioCallbackLock);
+
+        if (tempBlock->getNumChannels() > 0 && State::GetDenormalizedValue("channelN") > 0) {
+
+
+            //// Copy content of main block to N amount of channels in tempBlock
+            copyBlockToNChannels(block);
+
+            //// Run the simulation...!
+            simulation.process(juce::dsp::ProcessContextReplacing<float>(*tempBlock));
+
+            //// Pack processed data back to the original amount of channels
+            auto simulatedBlock = packBlockToOrgChannels();
+
+            block.fill(0);
+
+            // Now block may copy the results
+            for (int i = 0; i < block.getNumChannels(); i++) {
+                block.getSingleChannelBlock(i).copyFrom(simulatedBlock);
+            }
+        }
+        else {
+
+            auto volume = State::GetInstance()->getParameter("volume")->getValue();
+            auto audio = State::GetInstance()->getParameter("audio")->getValue();
+
+            block.multiplyBy(volume * !audio * (State::GetDenormalizedValue("channelN") > 0 ? 1 : 0.3));
+        }
     }
     
     /*Ignore this section, is they are primarily there to allow SimulatorEngine to inherit AudioProcessor
@@ -201,13 +192,10 @@ private:
         return simulatedBlock;
     }
 
-    void copyBlockToNChannels(juce::AudioSourceChannelInfo bufferToFill) {
-
+    void copyBlockToNChannels(juce::dsp::AudioBlock<float> block) {
         auto N = tempBlock->getNumChannels();
-        for (int i = 0; i < N; i++) {
-            auto&& buffer = bufferToFill.buffer;
-            juce::dsp::AudioBlock<float> block(*buffer, bufferToFill.startSample);
 
+        for (int i = 0; i < N; i++) {
             auto channel = tempBlock->getSingleChannelBlock(i);
             channel.copyFrom(block);
         }
