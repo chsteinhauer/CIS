@@ -49,9 +49,7 @@ public:
     void visualizeOutput(const float* buffer, int size);
     void GUISetup();
 
-protected:
     //==============================================================================
-    // Your private member variables go here...
 
     OtherLookAndFeel otherLookAndFeel;
     juce::dsp::Gain<float> gain;
