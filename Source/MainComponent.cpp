@@ -67,7 +67,7 @@ void MainComponent::getNextAudioBlock(const juce::AudioSourceChannelInfo& buffer
 
     for (auto channel = 0; channel < maxOutputChannels; ++channel)
     {
-        //If there is no input or input and ouput channel do not match and not using media
+        // If there is no input or input and ouput channel do not match and not using media
         if ((!outputChannels[channel] || maxInputChannels == 0 || !inputChannels[channel])
             && editor->playerPanel.mediaToggle.getToggleState() == false)
         {
@@ -75,32 +75,20 @@ void MainComponent::getNextAudioBlock(const juce::AudioSourceChannelInfo& buffer
         }
 
         auto* buffer = bufferToFill.buffer->getReadPointer(channel, bufferToFill.startSample);
-        
 
-        for (auto i = 0; i < bufferToFill.numSamples; ++i)
-        {
-            editor->playerPanel.IN.pushNextSampleIntoFifo(buffer[i]);
-        }
+        visualizeInput(buffer, bufferToFill.numSamples);
     }
 
-    //Audio processing goes here...
-    engine->beginSimulationProcess(bufferToFill);
+    // Audio processing goes here...
+    engine->processBlockSimulation((juce::dsp::AudioBlock<float>(*bufferToFill.buffer)));
 
-    int N = State::GetDenormalizedValue("channelN");
-    auto volume = State::GetInstance()->getParameter("volume")->getValue();
-    auto audio = State::GetInstance()->getParameter("audio")->getValue();
-
+    // Show the default output state if toggle state is false
     if (!editor->playerPanel.outToggle.getToggleState()) {
-
         for (auto channel = 0; channel < maxOutputChannels; ++channel)
         {
-            auto* buffer = bufferToFill.buffer->getWritePointer(0, bufferToFill.startSample);
+            auto* buffer = bufferToFill.buffer->getReadPointer(channel, bufferToFill.startSample);
 
-            for (auto i = 0; i < bufferToFill.numSamples; ++i)
-            {
-                //buffer[i] = buffer[i] * volume * (N > 0 ? 1 : 0.3) * !audio;
-                editor->playerPanel.OUT.pushNextSampleIntoFifo(buffer[i]);
-            }
+            visualizeOutput(buffer, bufferToFill.numSamples);
         }
     }
 }
@@ -109,6 +97,11 @@ void MainComponent::releaseResources()
 {
     engine -> releaseResources();
     editor -> playerPanel.mediaPlayer.releaseResources();
+}
+
+void MainComponent::reset()
+{
+    engine->reset();
 }
 
 //==============================================================================
@@ -122,6 +115,20 @@ void MainComponent::GUISetup() {
 
     // Initial size of application
     setSize(1400, 600);
+}
+
+void MainComponent::visualizeInput(const float* buffer, int size) {
+    for (auto i = 0; i < size; ++i)
+    {
+        editor->playerPanel.IN.pushNextSampleIntoFifo(buffer[i]);
+    }
+}
+
+void MainComponent::visualizeOutput(const float* buffer, int size) {
+    for (auto i = 0; i < size; ++i)
+    {
+        editor->playerPanel.OUT.pushNextSampleIntoFifo(buffer[i]);
+    }
 }
 
 void MainComponent::paint (juce::Graphics& g)
