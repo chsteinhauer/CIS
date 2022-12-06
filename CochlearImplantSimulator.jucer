@@ -52,10 +52,6 @@
               file="Source/SimulationState.h"/>
       </GROUP>
       <GROUP id="{E5D0F0D6-DC17-1BB8-52E6-E864A8186E3E}" name="Components">
-        <FILE id="Pj6sdi" name="MainComponentPlugin.cpp" compile="1" resource="0"
-              file="Source/MainComponentPlugin.cpp"/>
-        <FILE id="j5MjA5" name="MainComponentPlugin.h" compile="0" resource="0"
-              file="Source/MainComponentPlugin.h"/>
         <FILE id="X3S9RY" name="ChannelFilterVisualizer.cpp" compile="1" resource="0"
               file="Source/ChannelFilterVisualizer.cpp"/>
         <FILE id="FfPFeu" name="ChannelFilterVisualizer.h" compile="0" resource="0"
