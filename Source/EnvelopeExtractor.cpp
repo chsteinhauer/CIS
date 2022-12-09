@@ -30,7 +30,7 @@ void EnvelopeExtractor::prepareHalfwaveRectification(const juce::dsp::ProcessSpe
 
     // Extra additional lowpass filter bc the envelope seems to be too detailed
     iir.reset();
-    iir.state = juce::dsp::IIR::Coefficients<float>::makeLowPass(spec.sampleRate, 10, 2);
+    iir.state = juce::dsp::IIR::Coefficients<float>::makeLowPass(spec.sampleRate, 50, 2);
     iir.prepare(spec);
 }
 
@@ -43,17 +43,20 @@ void EnvelopeExtractor::halfwaveRectification(const juce::dsp::ProcessContextRep
         float* data = block.getChannelPointer(i);
         for (int j = 0; j < block.getNumSamples(); j++)
         {
+
             auto sample = data[j];
             auto half_rec = std::fmaxf(sample,0);
             auto env = filters.at(i)->processSample(half_rec);
             filters.at(i)->snapToZero();
 
             // make envelope amplitude the same as input signal amplitude
-            data[j] = sqrt(2 * env);
+            //data[j] = sqrtf(static_cast<float>(2.f) * env);
+
+            data[j] = env;
         }
     }
 
-    iir.process(context);
+    //iir.process(context);
 }
 
 void EnvelopeExtractor::hilbertTransform(juce::dsp::AudioBlock<float> block)

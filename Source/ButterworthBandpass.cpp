@@ -45,9 +45,11 @@ void ButterworthBandpass::clearFilters()
 
 void ButterworthBandpass::process(juce::dsp::AudioBlock<float> block)
 {
+
 	int N = block.getNumChannels();
 
 	for (int i = 0; i < N; i++) {
+
 		juce::dsp::ProcessContextReplacing<float> context(block.getSingleChannelBlock(i));
 
 		auto& test = bandpasses.at(i);
