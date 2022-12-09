@@ -14,6 +14,7 @@ void Analyse::process(const juce::dsp::ProcessContextReplacing<float>& context) 
     if (context.isBypassed) {
         return;
     }
+
     bandpass.process(context.getOutputBlock());
     extractor.halfwaveRectification(context.getOutputBlock());
 }

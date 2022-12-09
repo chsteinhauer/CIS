@@ -31,10 +31,11 @@ public:
         } 
         else if (parameterID == "fmin" || parameterID == "fmax" || parameterID == "togglemedia")
         {
+            int N = State::GetDenormalizedValue("channelN");
+
             juce::ScopedLock audioLock(audioCallbackLock);
             simulation.reset();
-
-            int N = State::GetDenormalizedValue("channelN");
+            
             tempBlock.reset(new juce::dsp::AudioBlock<float>(tempBlockMemory, N, blockSize));
 
             if (N > 0) {
@@ -45,7 +46,6 @@ public:
             }
             else
             {
-
                 simulation.reset();
                 simulation.setBypassed<0>(true);
                 simulation.setBypassed<1>(true);
@@ -70,7 +70,6 @@ public:
         }
         else
         {
-
             simulation.reset();
             simulation.setBypassed<0>(true);
             simulation.setBypassed<1>(true);
@@ -122,7 +121,7 @@ public:
         }
         else {
 
-            auto volume = State::GetInstance()->getParameter("volume")->getValue();
+            auto volume = State::GetDenormalizedValue("volume");
             auto audio = State::GetInstance()->getParameter("audio")->getValue();
 
             block.multiplyBy(volume * !audio * (State::GetDenormalizedValue("channelN") > 0 ? 1 : 0.3));
