@@ -15,7 +15,8 @@ void Reconstruction::prepare(const juce::dsp::ProcessSpec& spec) {
 	butterworth.remakeFilters(spec);
 	compressor.reset();
 	
-	compressor.setThreshold(-50);
+	auto th = State::GetDenormalizedValue("threshold");
+	compressor.setThreshold(th);
 	compressor.setRatio(12);
 	compressor.setAttack(3);
 	compressor.setRelease(100);

@@ -51,7 +51,12 @@ void SpectrumVisualizer::drawNextFrameOfSpectrum()
         auto level = juce::jmap(juce::jlimit(mindB, maxdB, juce::Decibels::gainToDecibels(fftData[fftDataIndex])
             - juce::Decibels::gainToDecibels((float)fftSize)),
             mindB, maxdB, 0.0f, 1.0f);
-        scopeData[i] = pow(level,2);
+        scopeData[i] = level;
+    }
+
+    if (showThreshold) {
+        float y = -State::GetDenormalizedValue("threshold");
+        threshold = juce::Line<float>(0,y,getWidth(),y);
     }
 }
 
@@ -68,10 +73,19 @@ void SpectrumVisualizer::drawFrame(juce::Graphics& g) {
                       (float)juce::jmap(i,     0, scopeSize - 1, 0, width),
                               juce::jmap(scopeData[i],     0.0f, 1.0f, (float)height, 0.0f) });
     }
+
+    if (showThreshold) {
+        g.setColour(juce::Colours::aqua);
+        g.drawLine(threshold);
+    }
 }
 
 void SpectrumVisualizer::setTitle(std::string str) {
     title = str;
+}
+
+void SpectrumVisualizer::setThreshold(bool show) {
+    showThreshold = show;
 }
 
 void SpectrumVisualizer::pushNextSampleIntoFifo(float sample) noexcept
