@@ -24,6 +24,7 @@ public:
     juce::FlexBox player;
 
     juce::TextButton outToggle { "Change View" };
+    ThresholdSlider threshold;
     SpectrumVisualizer IN;
     SpectrumVisualizer OUT;
     ChannelSpectrumVisualizer OUT_CHANNELS;

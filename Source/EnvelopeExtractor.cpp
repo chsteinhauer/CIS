@@ -56,7 +56,7 @@ void EnvelopeExtractor::halfwaveRectification(const juce::dsp::ProcessContextRep
         }
     }
 
-    iir.process(context);
+    //iir.process(context);
 }
 
 void EnvelopeExtractor::hilbertTransform(juce::dsp::AudioBlock<float> block)

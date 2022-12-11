@@ -40,7 +40,7 @@ class SpectrumVisualizer  : public juce::Component, public juce::Timer {
         juce::Line<float> threshold;
 
         std::string title;
-        bool showThreshold;
+        bool showThreshold = false;
 
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SpectrumVisualizer)
 };

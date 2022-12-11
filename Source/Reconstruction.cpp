@@ -1,14 +1,24 @@
 
 #include "Reconstruction.h"
 
-Reconstruction::Reconstruction() {
-	
-}
+Reconstruction::Reconstruction() { }
 Reconstruction::~Reconstruction() { }
+
+void Reconstruction::parameterChanged(const juce::String& parameterID, float newValue) {
+	if (parameterID == "threshold") {
+		compressor.setThreshold(newValue);
+	}
+}
 
 void Reconstruction::prepare(const juce::dsp::ProcessSpec& spec) {
 	if (spec.numChannels <= 0) {
 		return;
+	}
+
+	if (!initialized) {
+		State::GetInstance()->addParameterListener("threshold", this);
+
+		initialized = true;
 	}
 
 	synth.prepare(spec);

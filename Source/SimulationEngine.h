@@ -100,9 +100,7 @@ public:
     void processBlockSimulation(juce::dsp::AudioBlock<float> block) {
         juce::ScopedLock audioLock(audioCallbackLock);
 
-        if (tempBlock->getNumChannels() > 0 && State::GetDenormalizedValue("channelN") > 0) {
-
-
+        if (tempBlock->getNumChannels() > 0) {
             //// Copy content of main block to N amount of channels in tempBlock
             copyBlockToNChannels(block);
 
@@ -120,11 +118,10 @@ public:
             }
         }
         else {
-
             auto volume = State::GetDenormalizedValue("volume");
             auto audio = State::GetInstance()->getParameter("audio")->getValue();
 
-            block.multiplyBy(volume * !audio * (State::GetDenormalizedValue("channelN") > 0 ? 1 : 0.3));
+            block.multiplyBy(volume * 0.1f * !audio);
         }
     }
     
