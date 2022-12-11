@@ -47,11 +47,17 @@ void SpectrumVisualizer::drawNextFrameOfSpectrum()
     for (int i = 0; i < scopeSize; ++i)                    
     {
         auto skewedProportionX = 1.0f - std::exp(std::log(1.0f - (float)i / (float)scopeSize) * 0.2f);
-        auto fftDataIndex = juce::jlimit(0, fftSize / 2, (int)(skewedProportionX * (float)fftSize * 0.5f));
+        auto fftDataIndex = juce::jlimit(0, fftSize / 2, (int)(skewedProportionX * (float)fftSize * 0.5));
         auto level = juce::jmap(juce::jlimit(mindB, maxdB, juce::Decibels::gainToDecibels(fftData[fftDataIndex])
             - juce::Decibels::gainToDecibels((float)fftSize)),
             mindB, maxdB, 0.0f, 1.0f);
-        scopeData[i] = pow(level,2);
+        scopeData[i] = level;
+    }
+
+    if (showThreshold) {
+        float y = juce::jmap(juce::jlimit(mindB, maxdB, State::GetDenormalizedValue("threshold")),
+                    mindB, maxdB, (float)getHeight(), 0.0f);
+        threshold = juce::Line<float>(0,y,getWidth(),y);
     }
 }
 
@@ -68,10 +74,21 @@ void SpectrumVisualizer::drawFrame(juce::Graphics& g) {
                       (float)juce::jmap(i,     0, scopeSize - 1, 0, width),
                               juce::jmap(scopeData[i],     0.0f, 1.0f, (float)height, 0.0f) });
     }
+
+    if (showThreshold) {
+        g.setColour(juce::Colours::aqua);
+        g.drawLine(threshold);
+        g.drawSingleLineText("threshold: " + std::to_string(State::GetDenormalizedValue("threshold")) + " dB", 
+            threshold.getStartX() + 5, threshold.getStartY() - 5);
+    }
 }
 
 void SpectrumVisualizer::setTitle(std::string str) {
     title = str;
+}
+
+void SpectrumVisualizer::setThreshold(bool show) {
+    showThreshold = show;
 }
 
 void SpectrumVisualizer::pushNextSampleIntoFifo(float sample) noexcept

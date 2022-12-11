@@ -1,6 +1,7 @@
 
 
 #include <JuceHeader.h>
+#include "SimulationState.h"
 
 #pragma once
 class SpectrumVisualizer  : public juce::Component, public juce::Timer {
@@ -22,6 +23,7 @@ class SpectrumVisualizer  : public juce::Component, public juce::Timer {
         void drawFrame(juce::Graphics& g);
 
         void setTitle(std::string str);
+        void setThreshold(bool show);
         void pushNextSampleIntoFifo(float sample) noexcept;
 
         int numChannels;
@@ -35,7 +37,10 @@ class SpectrumVisualizer  : public juce::Component, public juce::Timer {
         int fifoIndex = 0;
         bool nextFFTBlockReady = false;
         float scopeData[scopeSize];
+        juce::Line<float> threshold;
+
         std::string title;
+        bool showThreshold = false;
 
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SpectrumVisualizer)
 };

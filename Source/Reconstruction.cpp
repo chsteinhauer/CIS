@@ -1,21 +1,32 @@
 
 #include "Reconstruction.h"
 
-Reconstruction::Reconstruction() {
-	
-}
+Reconstruction::Reconstruction() { }
 Reconstruction::~Reconstruction() { }
+
+void Reconstruction::parameterChanged(const juce::String& parameterID, float newValue) {
+	if (parameterID == "threshold") {
+		compressor.setThreshold(newValue);
+	}
+}
 
 void Reconstruction::prepare(const juce::dsp::ProcessSpec& spec) {
 	if (spec.numChannels <= 0) {
 		return;
 	}
 
+	if (!initialized) {
+		State::GetInstance()->addParameterListener("threshold", this);
+
+		initialized = true;
+	}
+
 	synth.prepare(spec);
 	butterworth.remakeFilters(spec);
 	compressor.reset();
 	
-	compressor.setThreshold(-50);
+	auto th = State::GetDenormalizedValue("threshold");
+	compressor.setThreshold(th);
 	compressor.setRatio(12);
 	compressor.setAttack(3);
 	compressor.setRelease(100);

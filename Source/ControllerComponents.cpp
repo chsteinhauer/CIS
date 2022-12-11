@@ -98,6 +98,37 @@ void VolumeSlider::mouseUp(const juce::MouseEvent& evt) {
 }
 
 
+/* VolumeSlider */
+ThresholdSlider::ThresholdSlider(std::string id, std::string _label) : attachment(*State::GetInstance(), id, *this) {
+    auto par = State::GetInstance()->getParameterRange(id);
+
+    // default slider config
+    setRange(par.start, par.end, par.interval);
+    setTextBoxStyle(juce::Slider::NoTextBox, true, 0, 0);
+    setSize(190, 30);
+    setSliderStyle(juce::Slider::LinearVertical);
+
+    if (!_label.empty()) {
+        label.setText(_label, juce::dontSendNotification);
+        label.attachToComponent(this, false);
+    }
+
+    addAndMakeVisible(label);
+}
+
+ThresholdSlider::~ThresholdSlider() {}
+
+void ThresholdSlider::mouseDown(const juce::MouseEvent& evt) {
+    setMouseCursor(juce::MouseCursor::DraggingHandCursor);
+    juce::Slider::mouseDown(evt);
+}
+
+void ThresholdSlider::mouseUp(const juce::MouseEvent& evt) {
+    setMouseCursor(juce::MouseCursor::NormalCursor);
+    juce::Slider::mouseUp(evt);
+}
+
+
 /* FrequencySlider */
 FrequencySlider::FrequencySlider(std::string _label) { //: attachment(*State::GetInstance(), id, *this) {
     setSliderStyle(juce::Slider::TwoValueHorizontal);

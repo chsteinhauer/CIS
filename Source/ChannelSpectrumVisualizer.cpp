@@ -66,6 +66,12 @@ void ChannelSpectrumVisualizer::drawNextMultiFrameOfSpectrum(int channel)
             mindB, maxdB, 0.0f, 1.0f);
         multiScopeData[channel][i] = level*0.9;
     }
+
+    if (showThreshold) {
+        float y = juce::jmap(juce::jlimit(mindB, maxdB, State::GetDenormalizedValue("threshold")),
+            mindB, maxdB, (float)getHeight(), 0.0f);
+        threshold = juce::Line<float>(0, y, getWidth(), y);
+    }
 }
 
 void ChannelSpectrumVisualizer::drawFrame(juce::Graphics& g) {
@@ -89,6 +95,13 @@ void ChannelSpectrumVisualizer::drawFrame(juce::Graphics& g) {
                           (float)juce::jmap(i,     0, scopeSize - 1, 0, width),
                                   juce::jmap(multiScopeData[channel][i],     0.0f, 1.0f, (float)height, 0.0f) });
         }
+    }
+
+    if (showThreshold) {
+        g.setColour(juce::Colours::aqua);
+        g.drawLine(threshold);
+        g.drawSingleLineText("threshold: " + std::to_string(State::GetDenormalizedValue("threshold")) + " dB",
+            threshold.getStartX() + 5, threshold.getStartY() - 5);
     }
 }
 

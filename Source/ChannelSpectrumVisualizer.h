@@ -32,6 +32,8 @@ private:
     juce::dsp::FFT forwardFFT;
     juce::dsp::WindowingFunction<float> window;
     std::string title;
+    bool showThreshold = true;
+    juce::Line<float> threshold;
 
     float fftTable[maxN][2 * fftSize] = {{0}};
     float fifoTable[maxN][2 * fftSize] = {{0}};

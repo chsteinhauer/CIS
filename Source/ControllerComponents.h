@@ -43,6 +43,17 @@ struct VolumeSlider : public juce::Slider {
     juce::Label label;
 };
 
+struct ThresholdSlider : public juce::Slider {
+    ThresholdSlider(std::string id, std::string _label);
+    ~ThresholdSlider();
+
+    void mouseDown(const juce::MouseEvent& evt) override;
+    void mouseUp(const juce::MouseEvent& evt) override;
+
+    juce::AudioProcessorValueTreeState::SliderAttachment attachment;
+    juce::Label label;
+};
+
 struct FrequencySlider : public juce::Slider, public juce::AudioProcessorValueTreeState::Listener {
     FrequencySlider(std::string _label);
     ~FrequencySlider();
