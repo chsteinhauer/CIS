@@ -53,7 +53,7 @@ Select::Select(std::string id, std::string _label = "") : juce::ComboBox(id), at
     }
 
     addAndMakeVisible(label);
-    setSelectedId(6);
+    setSelectedId(7);
 }
 
 Select::~Select() {}
@@ -98,22 +98,23 @@ void VolumeSlider::mouseUp(const juce::MouseEvent& evt) {
 }
 
 
-/* VolumeSlider */
+/* ThresholdSlider */
 ThresholdSlider::ThresholdSlider(std::string id, std::string _label) : attachment(*State::GetInstance(), id, *this) {
     auto par = State::GetInstance()->getParameterRange(id);
 
     // default slider config
     setRange(par.start, par.end, par.interval);
-    setTextBoxStyle(juce::Slider::NoTextBox, true, 0, 0);
-    setSize(190, 30);
+    setSize(130, 30);
     setSliderStyle(juce::Slider::LinearVertical);
+    setTextBoxStyle(juce::Slider::TextBoxBelow, true, 50, 20);
 
-    if (!_label.empty()) {
+
+ /*   if (!_label.empty()) {
         label.setText(_label, juce::dontSendNotification);
         label.attachToComponent(this, false);
     }
 
-    addAndMakeVisible(label);
+    addAndMakeVisible(label);*/
 }
 
 ThresholdSlider::~ThresholdSlider() {}
@@ -130,7 +131,7 @@ void ThresholdSlider::mouseUp(const juce::MouseEvent& evt) {
 
 
 /* FrequencySlider */
-FrequencySlider::FrequencySlider(std::string _label) { //: attachment(*State::GetInstance(), id, *this) {
+FrequencySlider::FrequencySlider(std::string _label) {
     setSliderStyle(juce::Slider::TwoValueHorizontal);
     setRange(20, 20000, 0.1f);
 

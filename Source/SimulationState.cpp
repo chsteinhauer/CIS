@@ -62,9 +62,19 @@ juce::AudioProcessorValueTreeState::ParameterLayout State::createParameters() {
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{ "fmax",    1 }, "Frequency max",
         juce::NormalisableRange<float>(20, 20000, 0.1f), 4500));
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{ "volume",    1 }, "Volume",
-        juce::NormalisableRange<float>(0.0f, 10.0f), 1.0f));
+        juce::NormalisableRange<float>(0.0f, 1.0f), 1.0f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{ "sinegain",    1 }, "Sine Gain",
+        juce::NormalisableRange<float>(0.0f, 2.0f), 1.0f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{ "noisegain",    1 }, "Noise Gain",
+        juce::NormalisableRange<float>(0.0f, 2.0f), 1.0f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{ "pshcgain",    1 }, "PSHC Gain",
+        juce::NormalisableRange<float>(0.0f, 2.0f), 1.0f));
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{ "threshold",    1 }, "Compressor Threshold",
         juce::NormalisableRange<float>(-100.0f, 0.0f), -40.0f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{ "makeupgain",    1 }, "Make-up Gain",
+        juce::NormalisableRange<float>(0.0f, 100.0f), 0.0f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{ "dynamicrange",    1 }, "Dynamic Range",
+        juce::NormalisableRange<float>(0.0f, 100.0f), 60.0f));
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{ "channelN",  1 }, "Number of Channels",
         juce::NormalisableRange<float>(0, maxNumChannels, 1), 0));
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{ "Greenwood", 1 }, "Scaled Frequencies in Human Cochlear",

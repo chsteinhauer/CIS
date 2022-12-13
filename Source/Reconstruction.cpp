@@ -5,9 +5,15 @@ Reconstruction::Reconstruction() { }
 Reconstruction::~Reconstruction() { }
 
 void Reconstruction::parameterChanged(const juce::String& parameterID, float newValue) {
-	if (parameterID == "threshold") {
+	/*if (parameterID == "threshold") {
 		compressor.setThreshold(newValue);
 	}
+
+	if (parameterID == "makeupgain") {
+		makeupGain.setGainDecibels(newValue);
+
+		DBG("gain: " << makeupGain.getGainLinear());
+	}*/
 }
 
 void Reconstruction::prepare(const juce::dsp::ProcessSpec& spec) {
@@ -16,22 +22,34 @@ void Reconstruction::prepare(const juce::dsp::ProcessSpec& spec) {
 	}
 
 	if (!initialized) {
-		State::GetInstance()->addParameterListener("threshold", this);
+		/*State::GetInstance()->addParameterListener("threshold", this);
+		State::GetInstance()->addParameterListener("makeupgain", this);*/
 
 		initialized = true;
 	}
 
 	synth.prepare(spec);
 	butterworth.remakeFilters(spec);
-	compressor.reset();
+	/*compressor.reset();
+	expander.reset();
+	makeupGain.reset();
 	
 	auto th = State::GetDenormalizedValue("threshold");
 	compressor.setThreshold(th);
 	compressor.setRatio(12);
 	compressor.setAttack(3);
 	compressor.setRelease(100);
-
 	compressor.prepare(spec);
+
+	expander.setThreshold(th - 30);
+	expander.setRatio(1.9);
+	expander.setAttack(3);
+	expander.setRelease(100);
+	expander.prepare(spec);
+
+	auto mg = State::GetDenormalizedValue("makeupgain");
+	makeupGain.setGainDecibels(mg);
+	makeupGain.prepare(spec);*/
 }
 
 void Reconstruction::process(const juce::dsp::ProcessContextReplacing<float>& context) {
@@ -41,13 +59,17 @@ void Reconstruction::process(const juce::dsp::ProcessContextReplacing<float>& co
 
 	synth.process(context);
 	butterworth.process(context.getOutputBlock());
-	compressor.process(context);
+	/*compressor.process(context);
+	expander.process(context);
+	makeupGain.process(context);*/
 }
 
 void Reconstruction::reset() {
 	synth.reset();
 	butterworth.clearFilters();
-	compressor.reset();
+	/*compressor.reset();
+	makeupGain.reset();
+	expander.reset();*/
 }
 
 Reconstruction::Synthesis::Synthesis() {}
@@ -68,6 +90,10 @@ void Reconstruction::Synthesis::process(const juce::dsp::ProcessContextReplacing
 
 	Block block(context.getOutputBlock());
 
+	float sineGain = State::GetDenormalizedValue("sinegain");
+	float noiseGain = State::GetDenormalizedValue("noisegain");
+	float pshcGain = State::GetDenormalizedValue("pshcgain");
+
 	for (int channel = 0; channel < block.getNumChannels(); channel++)
 	{
 		float* data = block.getChannelPointer(channel);
@@ -78,13 +104,13 @@ void Reconstruction::Synthesis::process(const juce::dsp::ProcessContextReplacing
 			float csine = 0, cnoise = 0, cpshc = 0;
 
 			if (sineEnabled) 
-				csine = sine.next(channel);
+				csine = sine.next(channel) * sineGain;
 
 			if (noiseEnabled)
-				cnoise = noise.next();
+				cnoise = noise.next() * noiseGain;
 
 			if (pshcEnabled)
-				cpshc = pshc.next(channel);
+				cpshc = pshc.next(channel) * pshcGain;
 
 			if (data != nullptr) {
 				data[i] = data[i] * csine + data[i] * cnoise + data[i] * cpshc;

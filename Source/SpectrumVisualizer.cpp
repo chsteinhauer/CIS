@@ -79,7 +79,11 @@ void SpectrumVisualizer::drawFrame(juce::Graphics& g) {
         g.setColour(juce::Colours::aqua);
         g.drawLine(threshold);
         g.drawSingleLineText("threshold: " + std::to_string(State::GetDenormalizedValue("threshold")) + " dB", 
-            threshold.getStartX() + 5, threshold.getStartY() - 5);
+            5, threshold.getStartY() - 5);
+
+        g.setColour(juce::Colours::azure);
+        g.drawSingleLineText("dynamic range: " + std::to_string(State::GetDenormalizedValue("dynamicrange")) + " dB",
+            getWidth() - 180, threshold.getStartY() - 5);
     }
 }
 

@@ -29,7 +29,6 @@ public:
     void stopMediaPlayer();
 
 private:
-
     enum TransportState {
         Stopped,
         Starting,

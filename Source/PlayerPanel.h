@@ -20,11 +20,12 @@ public:
     void mediaToggleButtonChanged();
 
 
-	juce::FlexBox panel;
+    juce::FlexBox panel;
     juce::FlexBox player;
 
-    juce::TextButton outToggle { "Change View" };
-    ThresholdSlider threshold;
+    juce::TextButton outToggle{ "Change View" };
+    ThresholdSlider threshold { "threshold", "Threshold" };
+    ThresholdSlider makeupGain { "makeupgain", "Make-up Gain" };
     SpectrumVisualizer IN;
     SpectrumVisualizer OUT;
     ChannelSpectrumVisualizer OUT_CHANNELS;
