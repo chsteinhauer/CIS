@@ -20,13 +20,17 @@ public:
     juce::FlexBox panel;
     juce::FlexBox checkBoxes;
     juce::FlexBox channelControllers;
-    juce::FlexBox freqSliders;
+    juce::FlexBox config;
     
 
     Select channels;
     CheckBox sine;
     CheckBox noise;
     CheckBox pshc;
+
+    VolumeSlider sineGain { "sinegain", "" };
+    VolumeSlider noiseGain { "noisegain", "" };
+    VolumeSlider pshcGain { "pshcgain", "" };
 
     //FrequencySlider fmin;
     FrequencySlider fslider;

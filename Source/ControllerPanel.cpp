@@ -11,22 +11,29 @@ ControllerPanel::ControllerPanel() :
     addAndMakeVisible(sine);
     addAndMakeVisible(noise);
     addAndMakeVisible(pshc);
+    addAndMakeVisible(sineGain);
+    addAndMakeVisible(noiseGain);
+    addAndMakeVisible(pshcGain);
     addAndMakeVisible(channels);
     addAndMakeVisible(fslider);
 
-    freqSliders.alignItems = juce::FlexBox::AlignItems::flexStart;
-    freqSliders.justifyContent = juce::FlexBox::JustifyContent::center;
+    config.alignItems = juce::FlexBox::AlignItems::flexStart;
+    config.justifyContent = juce::FlexBox::JustifyContent::spaceBetween;
+    config.flexDirection = juce::FlexBox::Direction::column;
 
-    freqSliders.items.add(flexItem(&fslider).withMargin(7));
+    config.items.add(flexItem(&channels).withMargin(7));
+    config.items.add(flexItem(&fslider).withMargin(7));
 
     checkBoxes.alignItems = juce::FlexBox::AlignItems::flexStart;
     checkBoxes.flexDirection = juce::FlexBox::Direction::column;
-    checkBoxes.justifyContent = juce::FlexBox::JustifyContent::center;
-
-    checkBoxes.items.add(flexItem(&channels).withMargin({18,7,0,7}));
+    checkBoxes.justifyContent = juce::FlexBox::JustifyContent::flexStart;
+    
     checkBoxes.items.add(flexItem(&sine));
+    checkBoxes.items.add(juce::FlexItem(sineGain).withMinWidth(150).withMinHeight(20));
     checkBoxes.items.add(flexItem(&noise));
+    checkBoxes.items.add(juce::FlexItem(noiseGain).withMinWidth(150).withMinHeight(20));
     checkBoxes.items.add(flexItem(&pshc));
+    checkBoxes.items.add(juce::FlexItem(pshcGain).withMinWidth(150).withMinHeight(20));
 
     channelControllers.alignItems = juce::FlexBox::AlignItems::center;
     channelControllers.flexDirection = juce::FlexBox::Direction::row;
@@ -35,8 +42,8 @@ ControllerPanel::ControllerPanel() :
     panel.alignItems = juce::FlexBox::AlignItems::center;
     panel.justifyContent = juce::FlexBox::JustifyContent::spaceBetween;
 
+    panel.items.add(juce::FlexItem(config).withMinHeight(150).withMaxHeight(200).withMinWidth(200).withMargin(14));
     panel.items.add(juce::FlexItem(checkBoxes).withMinHeight(200).withMinWidth(200).withMargin(14));
-    panel.items.add(juce::FlexItem(freqSliders).withMinHeight(100).withMinWidth(200).withMargin(14));
     panel.items.add(juce::FlexItem(channelControllers).withFlex(1).withMaxHeight(200).withMargin(14));
 
     channels.onChange = [this] { resized(); };
@@ -73,7 +80,7 @@ void ControllerPanel::resized() {
         sliders.at(i)->label.setVisible(i < N-1);
     }
 
-    freqSliders.performLayout(getLocalBounds().toFloat());
+    config.performLayout(getLocalBounds().toFloat());
     channelControllers.performLayout(getLocalBounds().toFloat());
     checkBoxes.performLayout(getLocalBounds().toFloat());
 

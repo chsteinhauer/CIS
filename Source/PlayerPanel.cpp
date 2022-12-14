@@ -1,7 +1,7 @@
 
 #include "PlayerPanel.h"
 
-PlayerPanel::PlayerPanel(): mediaToggle("togglemedia","Use media as input"), threshold("threshold", "Threshold") {
+PlayerPanel::PlayerPanel(): mediaToggle("togglemedia","Use media as input") {
     addAndMakeVisible(mediaPlayer);
     addAndMakeVisible(mediaToggle);
     //mediaToggle.setButtonText("Use media as input");
@@ -14,7 +14,7 @@ PlayerPanel::PlayerPanel(): mediaToggle("togglemedia","Use media as input"), thr
     player.flexDirection = juce::FlexBox::Direction::column;
 
     player.items.add(juce::FlexItem(mediaToggle).withMinWidth(150).withMinHeight(20).withMargin({7,0,7,0}));
-    player.items.add(juce::FlexItem(mediaPlayer).withMinWidth(300).withMinHeight(160));
+    player.items.add(juce::FlexItem(mediaPlayer).withMinWidth(200).withMinHeight(160));
 
     // Add input and output spectrum visualizer 
     addAndMakeVisible(IN);
@@ -29,6 +29,7 @@ PlayerPanel::PlayerPanel(): mediaToggle("togglemedia","Use media as input"), thr
     outToggle.setClickingTogglesState(true);
     addAndMakeVisible(outToggle);
     addAndMakeVisible(threshold);
+    addAndMakeVisible(makeupGain);
 
     panel.flexDirection = juce::FlexBox::Direction::row;
     panel.alignContent = juce::FlexBox::AlignContent::flexEnd;
@@ -49,7 +50,7 @@ void PlayerPanel::resized()
     OUT.stopTimer();
     OUT_CHANNELS.stopTimer();
 
-    panel.items.add(juce::FlexItem(player).withMinWidth(300).withMinHeight(200.0f).withMargin({ 21, 14, 21, 21 }));
+    panel.items.add(juce::FlexItem(player).withMinWidth(200).withMinHeight(200.0f).withMargin({ 21, 14, 21, 21 }));
     panel.items.add(juce::FlexItem(IN).withFlex(1).withMinWidth(300.0f).withMinHeight(200.0f).withMaxHeight(400).withMargin({ 21, 7, 21, 7 }));
 
     IN.startTimerHz(20);
@@ -69,13 +70,14 @@ void PlayerPanel::resized()
         OUT_CHANNELS.startTimerHz(20);
     }
 
-    panel.items.add(juce::FlexItem(threshold).withMinHeight(200.0f).withMaxHeight(400).withMinWidth(30).withMargin({ 7, 14, 7, 0 }));
+    panel.items.add(juce::FlexItem(threshold).withMinHeight(150.0f).withMaxHeight(400).withMinWidth(50).withMargin({ 7, 7, 7, 0 }));
+    panel.items.add(juce::FlexItem(makeupGain).withMinHeight(150.0f).withMaxHeight(400).withMinWidth(50).withMargin({ 7, 14, 7, 0 }));
 
     player.performLayout(getLocalBounds().toFloat());
     panel.performLayout(getLocalBounds().toFloat());
 
     auto p = getLocalBounds().getTopRight();
-    outToggle.setBounds(p.getX()-160,p.getY()+30,80,20);
+    outToggle.setBounds(p.getX()-230,p.getY()+30,80,20);
 }
 
 

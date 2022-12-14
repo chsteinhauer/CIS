@@ -14,10 +14,13 @@ public:
     SimulationEngine() : AudioProcessor(getBusesProperties()) {
         State::Initialize(*this);
 
-        State::GetInstance()->addParameterListener("fmin", this);
-        State::GetInstance()->addParameterListener("channelN", this);
-        State::GetInstance()->addParameterListener("fmax", this);
-        State::GetInstance()->addParameterListener("togglemedia", this);
+        auto state = State::GetInstance();
+        state->addParameterListener("fmin", this);
+        state->addParameterListener("channelN", this);
+        state->addParameterListener("fmax", this);
+        state->addParameterListener("togglemedia", this);
+        state->addParameterListener("threshold", this);
+        state->addParameterListener("makeupgain", this);
     }
     ~SimulationEngine() {}
 
@@ -34,7 +37,8 @@ public:
             int N = State::GetDenormalizedValue("channelN");
 
             juce::ScopedLock audioLock(audioCallbackLock);
-            simulation.reset();
+            reset();
+            setupCompression();
             
             tempBlock.reset(new juce::dsp::AudioBlock<float>(tempBlockMemory, N, blockSize));
 
@@ -46,11 +50,18 @@ public:
             }
             else
             {
-                simulation.reset();
                 simulation.setBypassed<0>(true);
                 simulation.setBypassed<1>(true);
                 simulation.setBypassed<2>(true);
             }
+        }
+
+        if (parameterID == "threshold") {
+            compressor.setThreshold(newValue);
+        }
+
+        if (parameterID == "makeupgain") {
+            makeupGain.setGainDecibels(newValue);
         }
     }
 
@@ -61,6 +72,8 @@ public:
 
         auto N = State::GetDenormalizedValue("channelN");
 
+        reset();
+        setupCompression();
         tempBlock.reset(new juce::dsp::AudioBlock<float>(tempBlockMemory, N, blockSize));
         if (N > 0) {
             simulation.prepare({ sampleRate, (juce::uint32)blockSize, (juce::uint32)N });
@@ -70,7 +83,6 @@ public:
         }
         else
         {
-            simulation.reset();
             simulation.setBypassed<0>(true);
             simulation.setBypassed<1>(true);
             simulation.setBypassed<2>(true);
@@ -109,6 +121,30 @@ public:
 
             //// Pack processed data back to the original amount of channels
             auto simulatedBlock = packBlockToOrgChannels();
+            auto ctx = juce::dsp::ProcessContextReplacing<float>(simulatedBlock);
+
+            compressor.process(ctx);
+            //expander.process(ctx);
+
+            float minFound = 100.0f;
+            for (int sample = 0; sample < simulatedBlock.getNumSamples(); ++sample)
+            {
+                auto value = std::fabs(simulatedBlock.getSample(0, sample));
+
+                if (value > 0)
+                    minFound = juce::jmin(value, minFound);
+            }
+
+            auto th = State::GetDenormalizedValue("threshold");
+            auto dynamicRange = th - juce::Decibels::gainToDecibels(minFound);
+
+            //DBG("max: " << th << " min: " << minFound << " (" << juce::Decibels::gainToDecibels(minFound) << ") " << dynamicRange);
+
+            auto par = State::GetInstance()->getParameter("dynamicrange");
+            auto normdr = par->convertTo0to1(dynamicRange);
+            par->setValueNotifyingHost(normdr);
+
+            makeupGain.process(ctx);
 
             block.fill(0);
 
@@ -123,6 +159,15 @@ public:
 
             block.multiplyBy(volume * 0.1f * !audio);
         }
+
+        
+    }
+
+    void reset() {
+        simulation.reset();
+        compressor.reset();
+        expander.reset();
+        makeupGain.reset();
     }
     
     /*Ignore this section, is they are primarily there to allow SimulatorEngine to inherit AudioProcessor
@@ -197,6 +242,29 @@ private:
         }
     }
 
+    void setupCompression() {
+        compressor.reset();
+        expander.reset();
+        makeupGain.reset();
+
+        auto th = State::GetDenormalizedValue("threshold");
+        compressor.setThreshold(th);
+        compressor.setRatio(12);
+        compressor.setAttack(3);
+        compressor.setRelease(100);
+        compressor.prepare({ sampleRate, (juce::uint32)blockSize, (juce::uint32)1 });
+
+        expander.setThreshold(th - 30);
+        expander.setRatio(1.9);
+        expander.setAttack(3);
+        expander.setRelease(100);
+        expander.prepare({ sampleRate, (juce::uint32)blockSize, (juce::uint32)1 });
+
+        auto mg = State::GetDenormalizedValue("makeupgain");
+        makeupGain.setGainDecibels(mg);
+        makeupGain.prepare({ sampleRate, (juce::uint32)blockSize, (juce::uint32)1 });
+    }
+
     juce::CriticalSection audioCallbackLock;
     juce::HeapBlock<char> tempBlockMemory;
     std::unique_ptr<juce::dsp::AudioBlock<float>> tempBlock;
@@ -206,6 +274,10 @@ private:
 
     SimulationEditor* editor;
     juce::dsp::ProcessorChain<ModuleA, ModuleB, ModuleC> simulation;
+
+    juce::dsp::Compressor<float> compressor;
+    juce::dsp::Gain<float> makeupGain;
+    juce::dsp::NoiseGate<float> expander;
 };
 
 
