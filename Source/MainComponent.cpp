@@ -80,7 +80,8 @@ void MainComponent::getNextAudioBlock(const juce::AudioSourceChannelInfo& buffer
     }
 
     // Audio processing goes here...
-    engine->processBlockSimulation((juce::dsp::AudioBlock<float>(*bufferToFill.buffer)));
+    if(State::GetDenormalizedValue("channelN") > 0)
+        engine->processBlockSimulation((juce::dsp::AudioBlock<float>(*bufferToFill.buffer)));
 
     // Show the default output state if toggle state is false
     if (!editor->playerPanel.outToggle.getToggleState()) {

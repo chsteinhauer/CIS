@@ -157,7 +157,7 @@ public:
             auto volume = State::GetDenormalizedValue("volume");
             auto audio = State::GetInstance()->getParameter("audio")->getValue();
 
-            block.multiplyBy(volume * 0.1f * !audio);
+            block.multiplyBy(volume * !audio);
         }
 
         
